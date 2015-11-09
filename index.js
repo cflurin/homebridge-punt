@@ -38,10 +38,10 @@ function Platform(log, config) {
   var plugin_version = Utils.readPluginVersion(plugin_name);
   this.log("%s v%s", plugin_name, plugin_version);
   
-  //Utils.readGitHubVersion(github_url);
+  Utils.readGitHubVersion(github_url);
   
   if (this.p_config.monitor.run) {
-    this.Monitor = new Monitor(this.log, this.p_config, this.Accessories);
+    this.Monitor = new Monitor(this.log, this.p_config, this.Accessories, plugin_name);
     this.Monitor.startServer();
   }
 }

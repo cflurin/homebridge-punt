@@ -130,7 +130,7 @@ Gateway.prototype.get = function(t_characteristic, callback) {
     callback(null, this.i_value[t_characteristic]);
   }
   else {
-    this.log("get else: reading %s %s", t_characteristic, reading[this.i_characteristic.service][t_characteristic]);
+    //this.log("get else: reading %s %s", t_characteristic, reading[this.i_characteristic.service][t_characteristic]);
     var cmd = '{ReadingsVal("' + this.name + '","' + reading[this.i_characteristic.service][t_characteristic] + '","")}';
     var gateway_url = this.base_url + '/fhem?cmd=' + cmd + '&XHR=1';
     //this.log("get: gateway_url %s", gateway_url);
