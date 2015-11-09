@@ -39,7 +39,7 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 ```sh
 {
   "gateway": {
-    "name": "punt",
+    "name": "fhem",
     "url": "127.0.0.1",
     "port": "8083",
     "auth": {"user": "foo", "password": "bar"},
