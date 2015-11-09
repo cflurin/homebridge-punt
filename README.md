@@ -96,7 +96,7 @@ You can change the port number in config-punt.json.
 
 ### Supported Services
 
-The latest version (work in progress) supports following services (accessories):
+The latest version (work in progress) supports following services (accessories) for the Fhem-Platform:
 
 * Outlet
 * Switch
