@@ -1,0 +1,28 @@
+{
+  "name": "homebridge-punt",
+  "version": "0.1.0",
+  "description": "Homebridge Plugin",
+  "license": "ISC",
+  "author": {
+    "name": "flurin"
+  },
+  "keywords": [
+    "homebridge",
+    "homebridge-plugin",
+    "homekit",
+    "siri",
+    "punt",
+    "fhem"
+  ],
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cflurin/homebridge-punt.git"
+  },
+  "dependencies": {
+    "request": "^2.65.0"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "gateway": {
+    "name": "punt",
+    "url": "127.0.0.1",
+    "port": "8083",
+    "auth": {"user": "foo", "password": "bar"},
+    "longpoll": true
+  },
+  
+  "monitor": {
+    "port": "8081",
+    "run": true
+  },
+  
+  "accessories": [
+    {
+      "name": "alarm_control",
+      "service": "Switch"
+    },
+    {
+      "name": "temp_control",
+      "service": "Switch"
+    },
+    {
+      "name": "flex_lamp",
+      "service": "Outlet"
+    },
+    {
+      "name": "led_bulb",
+      "service": "Lightbulb"
+    },
+    {
+      "name": "temp_office",
+      "service": "TemperatureSensor"
+    },
+    {
+      "name": "bathroom_blind",
+      "service": "WindowCovering",
+      "operationmode": "venetian"
+    }
+  ]
+}
