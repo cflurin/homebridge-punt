@@ -37,7 +37,7 @@ Monitor.prototype.handleRequest = function(request, response) {
   res += 'table, th, td {border: 1px solid black; border-collapse: collapse;}';
   res += 'th, td {padding: 2px 10px 2px 10px;}';
   res += '</style></head><body>';
-  res += '<p>' + this.plugin_name + ' v' + Utils.getPluginVersion() + ', latest v' + Utils.getGitHubVersion();
+  res += '<p>' + this.plugin_name + ' v' + Utils.getPluginVersion() + ', latest v' + Utils.get_npmVersion(this.plugin_name);
   res += ', longpoll ' + this.p_config.gateway.longpoll + '</p>';
   res += '<table style="width:100%; font: 15px arial, sans-serif;">';
   res += '<tr><td>nr.</td><td>name</td><td>service</td><td>values</td></tr>';

@@ -1,4 +1,4 @@
-Homebridge plugin.
+Homebridge plugin for Fhem
 
 ### Installation
 

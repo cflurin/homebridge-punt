@@ -35,10 +35,14 @@ function Platform(log, config) {
   this.p_config = Utils.loadConfig(storagePath, plugin_name, config_name);
   //this.log("p_config %s", JSON.stringify(p_config));
   
-  var plugin_version = Utils.readPluginVersion(plugin_name);
+  var plugin_version = Utils.readPluginVersion();
   this.log("%s v%s", plugin_name, plugin_version);
   
-  Utils.readGitHubVersion(github_url);
+  Utils.read_npmVersion(plugin_name, function(npm_version) {
+    if (npm_version > plugin_version) {
+        this.log("%s a new version %s is avaiable", plugin_name, npm_version);
+      }
+  }.bind(this));
   
   if (this.p_config.monitor.run) {
     this.Monitor = new Monitor(this.log, this.p_config, this.Accessories, plugin_name);

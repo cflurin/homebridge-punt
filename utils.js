@@ -4,11 +4,10 @@ var path = require('path');
 var fs = require('fs');
 var request = require('request');
 
-var plugin_name;
 var plugins_name = "plugins";
 var plugin_version;
 var github_version;
-var github_url;
+var npm_version;
 
 module.exports = {
   Utils: Utils
@@ -46,25 +45,40 @@ Utils.getPluginVersion = function() {
   return plugin_version;
 }
 
-Utils.getGitHubVersion = function() {
-  this.readGitHubVersion(github_url);
+Utils.get_npmVersion = function(pkg) {
+  // Update version for the next call
+  this.read_npmVersion(pkg, function(version) {
+    npm_version = version;
+  });
+  return npm_version;
+}
+
+Utils.getGitHubVersion = function(pkg, github_url) {
+  this.read_GitHubVersion(pkg, github_url);
   return github_version;
 }
 
-Utils.readPluginVersion = function(name) {
+Utils.readPluginVersion = function() {
   
-  plugin_name = name;
   var packageJSONPath = path.join(__dirname, './package.json');
   var packageJSON = JSON.parse(fs.readFileSync(packageJSONPath));
   plugin_version = packageJSON.version;
   return plugin_version;
 }
 
-Utils.readGitHubVersion = function (url) {
+Utils.read_npmVersion = function(pck, callback) {
+  var exec = require('child_process').exec;
+  var cmd = 'npm view '+pck+' version';
+  exec(cmd, function(error, stdout, stderr) {
+    npm_version = stdout.replace('\n','');
+    callback(npm_version);
+    //console.log("npm_version %s", npm_version);
+ });
+}
+
+Utils.readGitHubVersion = function (pkg, url) {
   
-  github_url = url;
-  
-  request.get({url: github_url}, function(err, response, body) {
+  request.get({url: url}, function(err, response, body) {
     
     if (!err && response.statusCode == 200) {
       var package_json = body.trim();
@@ -72,7 +86,7 @@ Utils.readGitHubVersion = function (url) {
       var packageJSON = JSON.parse(package_json);
       github_version = packageJSON.version;
       if (github_version > plugin_version) {
-        console.log("%s a new version %s is avaiable", plugin_name, github_version);
+        console.log("%s a new version %s is avaiable", pkg, github_version);
       }
     }
     else {
@@ -81,6 +95,7 @@ Utils.readGitHubVersion = function (url) {
     }
   });
 }
+
 
 /**
  * Converts an HSV color value to RGB. Conversion formula
