@@ -63,10 +63,11 @@ function Accessory(log, p_config, index, Service, Characteristic) {
   this.operationmode = this.i_accessory["operationmode"] || "roller";
   
   this.service;
+  this.i_device = {};
   this.i_characteristic = {};
   this.i_value = {};
  
-  this.Gateway = new Gateway(this.log, p_config, index, this.i_characteristic, this.i_value, Characteristic);
+  this.Gateway = new Gateway(this.log, p_config, index, this.i_device, this.i_characteristic, this.i_value, Characteristic);
   
   if (this.i_service.match(/^Custom/)) {
     this.custom_service(Service, Characteristic);
@@ -151,8 +152,8 @@ Accessory.prototype.predifined_service = function(Service, Characteristic) {
     case "Outlet":
       this.i_characteristic.OutletInUse = this.service
         .getCharacteristic(Characteristic.OutletInUse)
-        .on('get', function(callback) {callback(null,this.i_value.OutletInUse)}.bind(this));
-      this.i_value.OutletInUse = true;
+        .on('get', function(callback) {this.Gateway.get("OutletInUse", callback)}.bind(this));
+      //this.i_value.OutletInUse = true;
       
       this.i_characteristic.On = this.service
         .getCharacteristic(Characteristic.On)

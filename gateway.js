@@ -20,6 +20,7 @@ reading.Lightbulb.Brightness = "dim";
 
 reading.Outlet = {};
 reading.Outlet.On = "state";
+reading.Outlet.OutletInUse = "state"; // todo 
 
 reading.Switch = {};
 reading.Switch.On = "state";
@@ -34,11 +35,12 @@ reading.WindowCovering.CurrentHorizontalTiltAngle = "positionSlat";
 reading.WindowCovering.TargetHorizontalTiltAngle = "positionSlat";
 
 
-function Gateway(log, p_config, index, i_characteristic, i_value, Charactereistic) {
+function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Charactereistic) {
  
   this.log = log;
   this.p_config = p_config;
   this.name = p_config.accessories[index].name;
+  this.i_device = i_device;
   this.i_characteristic = i_characteristic;
   this.i_value = i_value;
   this.Characteristic = Charactereistic;
@@ -62,7 +64,7 @@ function Gateway(log, p_config, index, i_characteristic, i_value, Charactereisti
   
   this.longpoll_running = false;
   
-  this.type = "";
+  //this.type = "";
   this.eventMap = {};
   this.eventMap.on = "on";
   this.eventMap.off = "off";
@@ -82,8 +84,8 @@ Gateway.prototype.get_type = function() {
     if (!err && response.statusCode == 200) {
       var r_value = body.trim();
       //this.log("type: %s %s", this.name, r_value);
-      this.type = r_value;
-      if (this.type == "EnOcean") this.get_eventMap();
+      this.i_device.type = r_value;
+      if (this.i_device.type == "EnOcean") this.get_eventMap();
     } 
     else {
       this.log.error(err);
@@ -313,8 +315,15 @@ Gateway.prototype.parsing = function(t_characteristic, r_value) {
       this.i_value[t_characteristic] = p_value;
       break;
       
+    case "OutletInUse":
+      this.log("get: %s r_value %s ", this.name, r_value);
+      p_value = true;
+      this.i_value[t_characteristic] = p_value;
+      break;
+      
     case "ContactSensorState":
       p_value = (r_value == "closed") ? this.Characteristic.ContactSensorState.CONTACT_DETECTED : this.Characteristic.ContactSensorState.CONTACT_DETECTED;
+      this.i_value[t_characteristic] = p_value;
       break;
 
     case "CurrentPosition":

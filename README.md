@@ -1,4 +1,5 @@
-Homebridge plugin for Fhem
+# homebridge-punt
+Homebridge Plugin for Fhem.
 
 ### Installation
 
