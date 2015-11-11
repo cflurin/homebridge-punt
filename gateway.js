@@ -20,7 +20,7 @@ reading.Lightbulb.Brightness = "dim";
 
 reading.Outlet = {};
 reading.Outlet.On = "state";
-reading.Outlet.OutletInUse = "state"; // todo 
+reading.Outlet.OutletInUse = "default"; // no request
 
 reading.Switch = {};
 reading.Switch.On = "state";
@@ -29,6 +29,7 @@ reading.TemperatureSensor = {};
 reading.TemperatureSensor.CurrentTemperature = "temperature";
 
 reading.WindowCovering = {};
+reading.WindowCovering.positionSlat = "default"; // no request
 reading.WindowCovering.CurrentPosition = "dim";
 reading.WindowCovering.TargetPosition = "dim";
 reading.WindowCovering.CurrentHorizontalTiltAngle = "positionSlat";
@@ -128,6 +129,11 @@ Gateway.prototype.get_eventMap = function() {
 
 Gateway.prototype.get = function(t_characteristic, callback) {
 
+  if (reading[this.i_characteristic.service][t_characteristic] == "default") {
+    callback(null, this.parsing(t_characteristic, null));
+    return;
+  }
+  
   if (this.i_value[t_characteristic] && this.p_config.gateway.longpoll) {
     callback(null, this.i_value[t_characteristic]);
   }
@@ -316,7 +322,7 @@ Gateway.prototype.parsing = function(t_characteristic, r_value) {
       break;
       
     case "OutletInUse":
-      this.log("get: %s r_value %s ", this.name, r_value);
+      //this.log("get: %s r_value %s ", this.name, r_value);
       p_value = true;
       this.i_value[t_characteristic] = p_value;
       break;
@@ -352,6 +358,12 @@ Gateway.prototype.parsing = function(t_characteristic, r_value) {
       //this.log("get: (%s) h: %s s: %s v: %s", t_characteristic, this.i_value.Hue, this.i_value.Saturation, this.i_value.Brightness);
       //this.log("get: %s %s %s", this.name, t_characteristic, this.i_value.Hue);
       p_value = this.i_value.Hue;
+      break;
+      
+    case "PositionState":
+      //this.log("get: %s r_value %s ", this.name, r_value);
+      p_value = this.Characteristic.PositionState.STOPPED;
+      this.i_value[t_characteristic] = p_value;
       break;
       
     case "Saturation":
