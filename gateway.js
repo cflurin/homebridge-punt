@@ -59,9 +59,9 @@ function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Char
     if (auth.sendImmediately == undefined) {
       auth.sendImmediately = false;
     }
-
-    this.request = request.defaults( { 'auth': auth, 'rejectUnauthorized': false } );
-  } else {
+    this.request = request.defaults({"auth": auth, "rejectUnauthorized": false});
+  }
+  else {
     this.request = request.defaults();
   }
   
