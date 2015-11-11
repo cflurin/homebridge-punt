@@ -1,6 +1,8 @@
 # homebridge-punt
 Homebridge Plugin for Fhem.
 
+If you are new to Homebridge, please first read the Homebridge [documentation](https://github.com/nfarina/homebridge).
+
 ### Installation
 
 Install homebridge:
