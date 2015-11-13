@@ -1,7 +1,7 @@
 # homebridge-punt
 Homebridge Plugin for Fhem.
 
-If you are new to Homebridge, please first read the Homebridge [documentation](https://github.com/nfarina/homebridge).
+If you are new to Homebridge, please first read the Homebridge [documentation](https://www.npmjs.com/package/homebridge).
 
 ### Installation
 
@@ -13,6 +13,8 @@ Install homebridge-punt:
 ```sh
 npm install -g homebridge-punt
 ```
+
+You may have to use sudo` depending on your system.
 
 ### Configuration
 Add the punt-platform in config.json in your home directory inside `.homebridge`.
@@ -99,7 +101,7 @@ You can change the port number in config-punt.json.
 
 ### Supported Services
 
-The latest version (work in progress) supports following services (accessories) for the Fhem-Platform:
+The latest version (work in progress) supports:
 
 * Outlet
 * Switch
