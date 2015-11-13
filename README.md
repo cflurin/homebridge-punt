@@ -14,7 +14,7 @@ Install homebridge-punt:
 npm install -g homebridge-punt
 ```
 
-You may have to use sudo` depending on your system.
+You may have to use `sudo` depending on your system.
 
 ### Configuration
 Add the punt-platform in config.json in your home directory inside `.homebridge`.
