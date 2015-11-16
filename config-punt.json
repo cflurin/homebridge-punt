@@ -1,15 +1,25 @@
 {
+  "init": {
+    "default": true
+  },
+  
   "gateway": {
     "name": "fhem",
     "url": "127.0.0.1",
     "port": "8083",
     "auth": {"user": "foo", "password": "bar"},
+    "run": true,
     "longpoll": true
   },
   
+  "simulator": {
+    "run": true,
+    "port": "4080"
+  },
+  
   "monitor": {
-    "port": "8081",
-    "run": true
+    "run": true,
+    "port": "8081"
   },
   
   "accessories": [
@@ -40,3 +50,4 @@
     }
   ]
 }
+

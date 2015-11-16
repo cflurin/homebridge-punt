@@ -48,9 +48,15 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
     "url": "127.0.0.1",
     "port": "8083",
     "auth": {"user": "foo", "password": "bar"},
+    "run": true,
     "longpoll": true
   },
     
+  "simulator": {
+    "run": true,
+    "port": "4080"
+  },
+  
   "monitor": {
     "port": "8081",
     "run": true
@@ -90,6 +96,16 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 }
 ```
 
+### Simulator
+
+Homebridge-punt has a integrated simulator. To run homebridge-punt in simulator mode without connection to the Fhem-Server, set "gateway": {"run": false}. However the simulator can run simultaneously with the gateway.
+
+**Note:** The actual version supports only the service `Switch`, more services coming soon.
+
+```sh
+http://127.0.0.1:4080
+```
+
 ### Monitor
 
 The Monitor shows the homebridge-punt Version and the Accessory Values, in your browser type:
@@ -97,7 +113,7 @@ The Monitor shows the homebridge-punt Version and the Accessory Values, in your 
 ```sh
 http://127.0.0.1:8081
 ```
-You can change the port number in config-punt.json.
+Change the port number in config-punt.json if neccessary.
 
 ### Supported Services
 

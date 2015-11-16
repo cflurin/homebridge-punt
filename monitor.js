@@ -1,7 +1,6 @@
 'use strict';
 
 var Utils = require('./utils.js').Utils;
-//var request = require('request');
 var http = require('http');
 
 module.exports = {
@@ -15,7 +14,7 @@ function Monitor(log, p_config, Accessories, plugin_name) {
   this.port = p_config.monitor.port;
   this.plugin_name = plugin_name;
 }
-  
+
 Monitor.prototype.startServer = function() {
 
   var Monitor_server = http.createServer(this.handleRequest.bind(this));
@@ -25,7 +24,7 @@ Monitor.prototype.startServer = function() {
   }.bind(this));
   
   Monitor_server.on('error', function(err) {
-    this.log("Monitor: Server error: " + err);
+    this.log("Monitor: Port %s Server %s ", this.port, err);
   }.bind(this));
 }
 
@@ -37,8 +36,6 @@ Monitor.prototype.handleRequest = function(request, response) {
   res += 'table, th, td {border: 1px solid black; border-collapse: collapse;}';
   res += 'th, td {font: 14px arial, sans-serif; padding: 2px 10px 2px 10px;}';
   res += '</style></head><body>';
-  //res += '<p>' + this.plugin_name + ' v' + Utils.getPluginVersion() + ', latest v' + Utils.get_npmVersion(this.plugin_name);
-  //res += ', longpoll ' + this.p_config.gateway.longpoll + '</p>';
   
   res += '<table style="width:98%; margin-left:auto;margin-right:auto">';
   res += '<tr><td colspan="5" style="font-size: 150%; font-weight: bold;">'+this.plugin_name+' v'+Utils.getPluginVersion()+', latest v'+Utils.get_npmVersion(this.plugin_name);

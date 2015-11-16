@@ -70,7 +70,8 @@ Utils.read_npmVersion = function(pck, callback) {
   var exec = require('child_process').exec;
   var cmd = 'npm view '+pck+' version';
   exec(cmd, function(error, stdout, stderr) {
-    npm_version = stdout.replace('\n','');
+    npm_version = stdout.trim();
+    //npm_version = stdout.replace(/(\r\n|\n|\r)/gm,"");
     callback(npm_version);
     //console.log("npm_version %s", npm_version);
  });

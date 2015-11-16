@@ -1,6 +1,8 @@
 'use strict';
 
-var Utils = require('./utils.js').Utils;
+var Utils = require('./utils.js').Utils,
+    Simulator = require('./simulator.js').Simulator;
+    
 var request = require('request');
 
 module.exports = {
@@ -36,7 +38,7 @@ reading.WindowCovering.CurrentHorizontalTiltAngle = "positionSlat";
 reading.WindowCovering.TargetHorizontalTiltAngle = "positionSlat";
 
 
-function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Charactereistic) {
+function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Charactereistic, Simulator) {
  
   this.log = log;
   this.p_config = p_config;
@@ -45,6 +47,10 @@ function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Char
   this.i_characteristic = i_characteristic;
   this.i_value = i_value;
   this.Characteristic = Charactereistic;
+  this.Simulator = Simulator;
+  
+  this.simulator = this.p_config.simulator || { "run": true };
+  this.simulator_run = this.simulator.run;
     
   //this.log("p_config %s", JSON.stringify(p_config));
   this.gateway_name = p_config.gateway.name;
@@ -53,13 +59,13 @@ function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Char
   var auth = p_config.gateway.auth;
 
   this.base_url = 'http://' + url + ':' + port;
-  //this.log("base_url: " + this.base_url);
+  if (index == 0) this.log("Gateway is running, address %s", this.base_url);
   
   if (auth) {
     if (auth.sendImmediately == undefined) {
       auth.sendImmediately = false;
     }
-    this.request = request.defaults({"auth": auth, "rejectUnauthorized": false});
+    this.request = request.defaults({ "auth": auth, "rejectUnauthorized": false });
   }
   else {
     this.request = request.defaults();
@@ -149,7 +155,8 @@ Gateway.prototype.get = function(t_characteristic, callback) {
       
       if (!err && response.statusCode == 200) {
         var r_value = body.trim();
-        callback(null, this.parsing(t_characteristic, r_value));   
+        var p_value = this.parsing(t_characteristic, r_value);
+        callback(null, p_value);   
       } 
       else {
         callback(err);
@@ -163,9 +170,14 @@ Gateway.prototype.get = function(t_characteristic, callback) {
 
 Gateway.prototype.set = function(t_characteristic, value, callback) {
   
+  //this.log("set: %s %s", this.name, value);
   if (value == this.i_value[t_characteristic]) {
     callback();
     return;
+  }
+  
+  if (t_characteristic == "On") {
+    value = (value == 0 || value == false) ? false : true;
   }
   
   var setting = this.setting(t_characteristic, value);
@@ -186,6 +198,7 @@ Gateway.prototype.set = function(t_characteristic, value, callback) {
       if (!err && response.statusCode == 200) {
         //this.log("set: %s %s %s", this.name, t_characteristic, value);
         this.i_value[t_characteristic] = value;
+        this.refreshSimulator();
         if (!setting.inst_callback) callback();
       }
       else {
@@ -384,6 +397,7 @@ Gateway.prototype.parsing = function(t_characteristic, r_value) {
       p_value = r_value;
       this.log.error("get: name %s, charactereistic %s not found", this.name, t_characteristic);
   }
+  this.refreshSimulator();
   return p_value;
 }
 
@@ -490,4 +504,13 @@ Gateway.prototype.poll_parsing = function (dataobj) {
     default:
       //this.log("poll: not used %s", dataobj[0]);
   } 
+  this.refreshSimulator();
+}
+
+
+Gateway.prototype.refreshSimulator = function() {
+
+  if (this.simulator.run) {
+    this.Simulator.refresh();
+  }
 }

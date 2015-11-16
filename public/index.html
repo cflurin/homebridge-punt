@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="homebridge-punt.css" />
+<script src="jquery-2.1.4.min.js"></script>
+<script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+<script>
+
+var origin = window.document.location.origin.replace(/http/, 'ws');
+var ws = new WebSocket(origin);
+
+var table_exist = false;
+
+function displayMessage(output, message, color) {
+  $(output).html("<span style='color:" + color + "'>" + message + "</span>");
+}
+
+ws.onopen = function (event) {
+  displayMessage("#h-status", "connected", "YellowGreen");
+}
+
+ws.onclose = function (event) {
+  displayMessage("#h-status", "disconnected", "Tomato");
+}
+
+ws.onmessage = function (event) {
+
+  //displayMessage("#status", "onmessage", "SteelBlue");
+  if (table_exist) {
+    updateTable(event.data);
+  } else {
+   createTable(event.data);
+  }
+  displayMessage("#version", "v0.1.8", "SteelBlue"); // todo
+};
+
+$(document).on("pagecreate", "#page1", function() {
+
+  $(document).ready(function() {
+    // not used
+  });
+});
+
+function updateTable(data) {
+
+  //displayMessage("#message", data, "Steelblue");
+  data = JSON.parse(data);
+  
+  var data_table = document.getElementById('data_table');
+  for (i = 0; i < data.length; i++) {
+    data_table.rows[i+1].cells[1].innerHTML = data[i].value;  // fix iPhone Portrait, Landscape OK
+  }
+}
+
+function createTable(data) {
+
+  //displayMessage("#message", data, "Steelblue");
+  data = JSON.parse(data);
+  
+  var data_table = $("<table data-role='table' class='ui-responsive' id='data_table'></table>");
+  var data_table_th = $("<thead><tr><th>accessory</th><th>value</th><th>set</th></tr></thead>");
+  data_table_th.appendTo(data_table);
+  
+  var data_table_tbody = $("<tbody></tbody>");
+  
+  for (i = 0; i < data.length; i++) {
+    var send_on = $("<a href='#' class='send_on"+i+" ui-btn ui-mini ui-btn-inline' data-set='on'>on</a>");
+    var send_off = $("<a href='#' class='send_off"+i+" ui-btn ui-mini ui-btn-inline' data-set='off'>off</a>");
+    
+    send_on.bind( "tap", {item: i, characteristic: "On", value: true}, function(event) {
+      var message = JSON.stringify(event.data);
+      //displayMessage("#message", message, "SteelBlue");
+      setTimeout(function() {
+        ws.send(message);
+      });
+    });
+    
+    send_off.bind( "tap", {item: i, characteristic: "On", value: false}, function(event) {
+      var message = JSON.stringify(event.data);
+      //displayMessage("#message", message, "SteelBlue");
+      setTimeout(function() {
+        ws.send(message);
+      });
+    });
+    
+    var data_table_tr = $("<tr></tr>");
+    var data_table_td1 = $("<td>"+data[i].accessory+"</td>");
+    var data_table_td2 = $("<td>"+data[i].value+"</td>");
+    var data_table_td3 = $("<td></td>");
+    send_on.appendTo(data_table_td3);
+    send_off.appendTo(data_table_td3);
+    
+    data_table_td1.appendTo(data_table_tr);
+    data_table_td2.appendTo(data_table_tr);
+    data_table_td3.appendTo(data_table_tr);
+    //send_on.appendTo(data_table_tr)
+    
+    data_table_tr.appendTo(data_table_tbody);
+  }
+  data_table_tbody.appendTo(data_table);
+  data_table.appendTo($("#content"));
+
+  data_table.table();
+  
+  table_exist = true;
+}
+
+</script>
+</head>
+
+<body>
+  <div data-role="page" id="page1">
+    <div data-role="header">
+      <div class="align-left">
+        <h3>Simulator  <span id="h-status"></span></h3>
+      </div>
+    </div>
+
+    <div data-role="main" class="ui-content">
+      <div id="content"></div>
+    </div>
+    <div data-role="footer">
+      <div class="align-left">
+        <h3>homebridge-punt <span id="version"></h3>
+      </div>
+      <div id="message"></div>
+    </div>
+  </div> 
+    
+</body>
+</html>

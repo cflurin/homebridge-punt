@@ -1,0 +1,28 @@
+body { 
+  font-family: Helvetica, san-serif;
+}
+
+tabel {
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+tr {
+  border: 1px solid #d6d6d6;
+}
+
+th {
+  text-align: right;
+}
+
+.status {
+  padding-left: 20px;
+}
+
+.ui-btn{
+  height: 15px; 
+}
+
+.align-left h1, h2, h3, h4 {
+    margin-left: 20px;
+}
