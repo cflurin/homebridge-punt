@@ -58,8 +58,8 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
   },
   
   "monitor": {
-    "port": "8081",
-    "run": true
+    "run": true,
+    "port": "8081"
   },
   
   "accessories": [
@@ -98,7 +98,7 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 
 ### Simulator
 
-Homebridge-punt has a integrated simulator. To run homebridge-punt in simulator mode without connecting to the Fhem-Server, set "gateway": {"run": false}. However the simulator can run simultaneously with the gateway.
+Homebridge-punt has an integrated simulator. To run homebridge-punt in simulator mode without connecting to the Fhem-Server, set "gateway": {"run": false}. However the simulator can run simultaneously with the gateway.
 
 **Note:** The actual version supports only the service `Switch`, more services coming soon.
 To install homebridge-punt with the new feature please use the GitHub repository:
