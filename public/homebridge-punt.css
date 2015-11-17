@@ -3,6 +3,7 @@ body {
 }
 
 tabel {
+  width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
 }
@@ -12,7 +13,8 @@ tr {
 }
 
 th {
-  text-align: right;
+  width: 33%;
+  text-align: left;
 }
 
 .status {
@@ -20,9 +22,14 @@ th {
 }
 
 .ui-btn{
-  height: 15px; 
+  width: 30px;
+  height: 16px;
+  margin-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .align-left h1, h2, h3, h4 {
     margin-left: 20px;
 }
+

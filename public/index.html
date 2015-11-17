@@ -9,47 +9,48 @@
 
 <script>
 
-var origin = window.document.location.origin.replace(/http/, 'ws');
-var ws = new WebSocket(origin);
+var ws;
 
-var table_exist = false;
+$(document).on("pagecreate", "#page1", function() {
+  $(document).ready(startWS);
+});
+
+function startWS() {
+ 
+  var origin = window.document.location.origin.replace(/http/, 'ws');
+  ws = new WebSocket(origin);
+  
+  ws.onopen = function (event) {
+    displayMessage("#h-status", "connected", "YellowGreen");
+  }
+
+  ws.onclose = function (event) {
+    displayMessage("#h-status", "disconnected", "Tomato");
+  }
+
+  ws.onmessage = function (event) {
+
+    var j_data = JSON.parse(event.data);
+
+    if(j_data.label) {
+      displayMessage("#version", "v"+j_data.label.version, "SteelBlue");
+    } else {
+      updateTable(j_data);
+    }
+  };
+}
 
 function displayMessage(output, message, color) {
   $(output).html("<span style='color:" + color + "'>" + message + "</span>");
 }
 
-ws.onopen = function (event) {
-  displayMessage("#h-status", "connected", "YellowGreen");
-}
-
-ws.onclose = function (event) {
-  displayMessage("#h-status", "disconnected", "Tomato");
-}
-
-ws.onmessage = function (event) {
-
-  //displayMessage("#status", "onmessage", "SteelBlue");
-  if (table_exist) {
-    updateTable(event.data);
-  } else {
-   createTable(event.data);
-  }
-  displayMessage("#version", "v0.1.8", "SteelBlue"); // todo
-};
-
-$(document).on("pagecreate", "#page1", function() {
-
-  $(document).ready(function() {
-    // not used
-  });
-});
-
 function updateTable(data) {
 
-  //displayMessage("#message", data, "Steelblue");
-  data = JSON.parse(data);
-  
+  //displayMessage("#message", JSON.parse(data), "SteelBlue");
   var data_table = document.getElementById('data_table');
+  
+  if (!data_table) createTable(data);
+  
   for (i = 0; i < data.length; i++) {
     data_table.rows[i+1].cells[1].innerHTML = data[i].value;  // fix iPhone Portrait, Landscape OK
   }
@@ -57,9 +58,7 @@ function updateTable(data) {
 
 function createTable(data) {
 
-  //displayMessage("#message", data, "Steelblue");
-  data = JSON.parse(data);
-  
+  //displayMessage("#message", JSON.parse(data), "Steelblue");
   var data_table = $("<table data-role='table' class='ui-responsive' id='data_table'></table>");
   var data_table_th = $("<thead><tr><th>accessory</th><th>value</th><th>set</th></tr></thead>");
   data_table_th.appendTo(data_table);
@@ -70,7 +69,7 @@ function createTable(data) {
     var send_on = $("<a href='#' class='send_on"+i+" ui-btn ui-mini ui-btn-inline' data-set='on'>on</a>");
     var send_off = $("<a href='#' class='send_off"+i+" ui-btn ui-mini ui-btn-inline' data-set='off'>off</a>");
     
-    send_on.bind( "tap", {item: i, characteristic: "On", value: true}, function(event) {
+    send_on.on("tap", {item: i, characteristic: "On", value: true}, function(event) {
       var message = JSON.stringify(event.data);
       //displayMessage("#message", message, "SteelBlue");
       setTimeout(function() {
@@ -78,7 +77,7 @@ function createTable(data) {
       });
     });
     
-    send_off.bind( "tap", {item: i, characteristic: "On", value: false}, function(event) {
+    send_off.on("tap", {item: i, characteristic: "On", value: false}, function(event) {
       var message = JSON.stringify(event.data);
       //displayMessage("#message", message, "SteelBlue");
       setTimeout(function() {
@@ -104,8 +103,6 @@ function createTable(data) {
   data_table.appendTo($("#content"));
 
   data_table.table();
-  
-  table_exist = true;
 }
 
 </script>

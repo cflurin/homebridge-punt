@@ -35,6 +35,9 @@ function Accessory(log, p_config, index, Service, Characteristic, Simulator) {
     this.Gateway = new Gateway(this.log, p_config, index, 
                    this.i_device, this.i_characteristic, this.i_value, Characteristic, this.Simulator);
   }
+  else {
+    if (index == 0) this.log.error("Gateway is not running, Simulator mode.");
+  }
     
   if (this.gateway.run && p_config.gateway.longpoll) {
     this.Gateway.Longpoll(index);

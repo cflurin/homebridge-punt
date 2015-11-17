@@ -41,15 +41,14 @@ Simulator.prototype.startServer = function() {
     this.connection.on = true;
     //this.log("Simulator start");
     
-    /*
-    var data = {};
-    data.plugin = this.plugin_name;
-    data.version = Utils.getPluginVersion();
-    data.latest = Utils.get_npmVersion(this.plugin_name);
+    var data = {"label": {
+        "plugin": this.plugin_name,
+        "version": Utils.getPluginVersion(),
+        "latest": Utils.get_npmVersion(this.plugin_name)
+      }
+    };
     
-    this.log("Simulator: data %s", JSON.stringify(data));
-    ws.send(JSON.stringify(data));
-    */
+    this.sendData(data);
     this.refresh();
     
     ws.on('open', function open() {
@@ -60,12 +59,20 @@ Simulator.prototype.startServer = function() {
       //this.log("Simulator received: %s", JSON.stringify(data));
       data = JSON.parse(data);
       var t_characteristic = data.characteristic;
-      //this.log("Simulator received: %s %s", data.item, data.value);
-      if (this.gateway.run) this.Accessories[data.item].Gateway.set(t_characteristic, data.value, function() {
-        // nothing
-      });
-      this.Accessories[data.item].i_value[t_characteristic] = data.value;
-      this.Accessories[data.item].i_characteristic[t_characteristic].setValue(data.value);
+      //this.log("Simulator received: %s %s %s", data.item, t_characteristic, data.value);
+      
+      //if (this.Accessories[data.item].i_value[t_characteristic]) {
+        if (this.gateway.run) { 
+          this.Accessories[data.item].Gateway.set(t_characteristic, data.value, function() {
+            // nothing
+          });
+        }
+        else {
+          // todo t_characteristic
+          this.Accessories[data.item].i_value.On = data.value;        
+          this.Accessories[data.item].i_characteristic.On.setValue(data.value);
+        }
+      //} // else todo
     }.bind(this));
     
     ws.on('close', function() {
@@ -109,14 +116,16 @@ Simulator.prototype.refresh = function() {
     //i_data.value = JSON.stringify(this.Accessories[i].i_value).replace('{', '').replace('}','');
     // todo select t_charachteristic
     i_data.value = JSON.stringify(this.Accessories[i].i_value.On); 
-    //this.log("Simulator i_data %s", JSON.stringify(i_data));
     data.push(i_data);
   }
-  
-  var j_data = JSON.stringify(data);
-  //this.log("Simulator data %s", j_data);
-  
+  this.sendData(data);
+}
+
+Simulator.prototype.sendData = function(data) {
+
   if (this.connection.on) {
+    var j_data = JSON.stringify(data);
+    //this.log("Simulator data %s", j_data);
     this.connection.ws.send(j_data, function ack(error) {
       if (error) this.log("Simulator error %s", error);
     }.bind(this));
