@@ -5,6 +5,8 @@ If you are new to Homebridge, please first read the Homebridge [documentation](h
 
 ### Installation
 
+**Note:** this is work in progress.
+
 Install homebridge:
 ```sh
 npm install -g homebridge
@@ -101,11 +103,6 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 Homebridge-punt has an integrated simulator. To run homebridge-punt in simulator mode without connecting to the Fhem-Server, set "gateway": {"run": false}. However the simulator can run simultaneously with the gateway.
 
 **Note:** The actual version supports only the service `Switch`, more services coming soon.
-To install homebridge-punt with the new feature please use the GitHub repository:
-
-```sh
-npm install -g https://github.com/cflurin/homebridge-punt.git
-```
 
 Type the simulator-address in your browser:
 
@@ -115,7 +112,7 @@ http://127.0.0.1:4080
 
 ### Monitor
 
-The Monitor shows the homebridge-punt Version and the Accessory Values, in your browser type:
+The Monitor shows the homebridge-punt Version and the Accessory Values. Type the moitor address in your browser:
 
 ```sh
 http://127.0.0.1:8081
