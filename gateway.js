@@ -42,6 +42,7 @@ function Gateway(log, p_config, index, i_device, i_characteristic, i_value, Char
  
   this.log = log;
   this.p_config = p_config;
+  this.index = index;
   this.name = p_config.accessories[index].name;
   this.i_device = i_device;
   this.i_characteristic = i_characteristic;
@@ -511,6 +512,6 @@ Gateway.prototype.poll_parsing = function (dataobj) {
 Gateway.prototype.refreshSimulator = function() {
 
   if (this.simulator.run) {
-    this.Simulator.refresh();
+    this.Simulator.refresh(this.index);
   }
 }

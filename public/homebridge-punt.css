@@ -17,7 +17,7 @@ th {
   text-align: left;
 }
 
-.status {
+.msg {
   padding-left: 20px;
 }
 
@@ -29,7 +29,8 @@ th {
   margin-bottom: 0px;
 }
 
-.align-left h1, h2, h3, h4 {
-    margin-left: 20px;
+.btn_tap {
+  background-color: lightsteelblue !important; 
 }
+
 

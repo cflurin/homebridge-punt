@@ -204,13 +204,13 @@ Accessory.prototype.predifined_service = function(Service, Characteristic) {
 Accessory.prototype.get = function(t_characteristic, callback) {
 
   if (this.gateway.run) this.Gateway.get(t_characteristic, callback);
-  this.Simulator.get(t_characteristic, this.index, this.gateway, callback);
+  if (this.simulator.run) this.Simulator.get(t_characteristic, this.index, this.gateway, callback);
 }
 
 Accessory.prototype.set = function(t_characteristic, value, callback) {
 
   if (this.gateway.run) this.Gateway.set(t_characteristic, value, callback);
-  this.Simulator.set(t_characteristic, this.index, value, this.gateway, callback);
+  if (this.simulator.run) this.Simulator.set(t_characteristic, this.index, value, this.gateway, callback);
 }
 
 Accessory.prototype.getServices = function() {

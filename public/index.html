@@ -6,9 +6,7 @@
 <link rel="stylesheet" href="homebridge-punt.css" />
 <script src="jquery-2.1.4.min.js"></script>
 <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
-
 <script>
-
 var ws;
 
 $(document).on("pagecreate", "#page1", function() {
@@ -16,116 +14,132 @@ $(document).on("pagecreate", "#page1", function() {
 });
 
 function startWS() {
- 
   var origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
-  
   ws.onopen = function (event) {
     displayMessage("#h-status", "connected", "YellowGreen");
   }
-
   ws.onclose = function (event) {
     displayMessage("#h-status", "disconnected", "Tomato");
   }
-
   ws.onmessage = function (event) {
-
     var j_data = JSON.parse(event.data);
-
-    if(j_data.label) {
-      displayMessage("#version", "v"+j_data.label.version, "SteelBlue");
-    } else {
-      updateTable(j_data);
+    switch (j_data.label.data_type) {
+      case "info":
+        var toolbar = document.getElementById("toolbar");
+        $(toolbar).html("<h3>homebridge-punt <span id='version'></span></h3>");
+        displayMessage("#version", "v"+j_data.label.version, "SteelBlue");
+      break;
+      case "value":
+        updateTable(j_data);
+      break;
     }
-  };
+  }
+  ws.onerror = function (event) {
+    displayMessage("#error_msg", event.data, "red");
+  }
 }
 
 function displayMessage(output, message, color) {
   $(output).html("<span style='color:" + color + "'>" + message + "</span>");
 }
 
-function updateTable(data) {
+function getValue(value) {
+  var r_value;
+  // todo switch(characteristic)
+  if (typeof value.On) r_value = value.On;
+  return r_value;
+}
 
-  //displayMessage("#message", JSON.parse(data), "SteelBlue");
+function setBtnColor(i, value) {
+  var btn_on = document.getElementById("btn_on"+i);
+  var btn_off = document.getElementById("btn_off"+i);
+  if (value) {
+    $(btn_on).addClass("btn_tap");
+    $(btn_off).removeClass("btn_tap");
+  } else {
+    $(btn_off).addClass("btn_tap");
+    $(btn_on).removeClass("btn_tap");
+  }
+}
+
+function updateTable(data) {
+  //displayMessage("#message", JSON.stringify(data), "SteelBlue");
   var data_table = document.getElementById('data_table');
-  
-  if (!data_table) createTable(data);
-  
-  for (i = 0; i < data.length; i++) {
-    data_table.rows[i+1].cells[1].innerHTML = data[i].value;  // fix iPhone Portrait, Landscape OK
+  if (!data_table) {
+    createTable(data);
+    for (i = 0; i < data.accessories.length; i++) {
+      setBtnColor(i, getValue(data.accessories[i].value));
+    }
+  } else {
+    //displayMessage("#error_msg", JSON.stringify(data), "YellowGreen");
+    var value;
+    var cell;
+    if (data.label.index == "all") {
+      for (i = 0; i < data.accessories.length; i++) {
+        value = getValue(data.accessories[i].value);
+        setBtnColor(i, value);
+      }
+    } else {
+      var i = data.label.index;
+      value = getValue(data.accessory.value);
+      setBtnColor(i, value);
+    }
   }
 }
 
 function createTable(data) {
-
-  //displayMessage("#message", JSON.parse(data), "Steelblue");
+  //displayMessage("#message", JSON.stringify(data), "SteelBlue");
   var data_table = $("<table data-role='table' class='ui-responsive' id='data_table'></table>");
-  var data_table_th = $("<thead><tr><th>accessory</th><th>value</th><th>set</th></tr></thead>");
+  var data_table_th = $("<thead><tr><th>accessory</th><th>value</th></tr></thead>");
   data_table_th.appendTo(data_table);
-  
   var data_table_tbody = $("<tbody></tbody>");
-  
-  for (i = 0; i < data.length; i++) {
-    var send_on = $("<a href='#' class='send_on"+i+" ui-btn ui-mini ui-btn-inline' data-set='on'>on</a>");
-    var send_off = $("<a href='#' class='send_off"+i+" ui-btn ui-mini ui-btn-inline' data-set='off'>off</a>");
-    
-    send_on.on("tap", {item: i, characteristic: "On", value: true}, function(event) {
+  for (i = 0; i < data.accessories.length; i++) {
+    var btn_on = $("<a href='#' id='btn_on"+i+"' class='ui-btn ui-mini ui-btn-inline' data-set='on'>on</a>");
+    var btn_off = $("<a href='#' id='btn_off"+i+"' class='ui-btn ui-mini ui-btn-inline' data-set='off'>off</a>");
+    btn_on.on("tap", {index: i, characteristic: "On", value: true}, function(event) {
       var message = JSON.stringify(event.data);
-      //displayMessage("#message", message, "SteelBlue");
       setTimeout(function() {
         ws.send(message);
       });
     });
-    
-    send_off.on("tap", {item: i, characteristic: "On", value: false}, function(event) {
+    btn_off.on("tap", {index: i, characteristic: "On", value: false}, function(event) {
       var message = JSON.stringify(event.data);
-      //displayMessage("#message", message, "SteelBlue");
       setTimeout(function() {
         ws.send(message);
       });
     });
-    
     var data_table_tr = $("<tr></tr>");
-    var data_table_td1 = $("<td>"+data[i].accessory+"</td>");
-    var data_table_td2 = $("<td>"+data[i].value+"</td>");
-    var data_table_td3 = $("<td></td>");
-    send_on.appendTo(data_table_td3);
-    send_off.appendTo(data_table_td3);
-    
-    data_table_td1.appendTo(data_table_tr);
-    data_table_td2.appendTo(data_table_tr);
-    data_table_td3.appendTo(data_table_tr);
-    //send_on.appendTo(data_table_tr)
-    
+    var data_table_td = $("<td>"+data.accessories[i].name+"</td>");
+    data_table_td.appendTo(data_table_tr);
+    data_table_td = $("<td></td>");
+    btn_off.appendTo(data_table_td); 
+    btn_on.appendTo(data_table_td);
+    data_table_td.appendTo(data_table_tr);
     data_table_tr.appendTo(data_table_tbody);
   }
   data_table_tbody.appendTo(data_table);
   data_table.appendTo($("#content"));
-
   data_table.table();
 }
-
 </script>
-</head>
 
+</head>
 <body>
   <div data-role="page" id="page1">
     <div data-role="header">
       <div class="align-left">
-        <h3>Simulator  <span id="h-status"></span></h3>
+        <h3 class="msg">Simulator  <span id="h-status"></span></h3>
       </div>
     </div>
-
     <div data-role="main" class="ui-content">
       <div id="content"></div>
     </div>
     <div data-role="footer">
-      <div class="align-left">
-        <h3>homebridge-punt <span id="version"></h3>
-      </div>
-      <div id="message"></div>
+      <div id="toolbar" class="msg"></div>
+      <div id="error_msg" class="msg"></div>
+      <div id="message" class="msg"></div>
     </div>
-  </div> 
-    
+  </div>     
 </body>
 </html>
