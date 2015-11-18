@@ -3,9 +3,10 @@ Homebridge Plugin for Fhem.
 
 If you are new to Homebridge, please first read the Homebridge [documentation](https://www.npmjs.com/package/homebridge).
 
+**Note:** this is work in progress.
+
 ### Installation
 
-**Note:** this is work in progress.
 
 Install homebridge:
 ```sh
