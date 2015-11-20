@@ -103,8 +103,8 @@ function createView(data) {
   var log = "";
   
   for (i = 0; i < data.accessories.length; i++) {
-    log += JSON.stringify(data.accessories[i]) + "<br>";
-    displayMessage("#message3", log, "SteelBlue");
+    //log += JSON.stringify(data.accessories[i]) + "<br>";
+    //displayMessage("#message3", log, "SteelBlue");
     block_a = $(ba+data.accessories[i].name+be);
     grid.append(block_a);
 
@@ -173,7 +173,7 @@ function createView(data) {
     var msg = $(this).data("msg");
     msg.value = $(this).val();
     var message = JSON.stringify(msg);
-    displayMessage("#message", message, "Blue");
+    //displayMessage("#message", message, "Blue");
     setTimeout(function() {
       ws.send(message);
     });
