@@ -103,7 +103,11 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 
 Homebridge-punt has an integrated simulator. To run homebridge-punt in simulator mode without connecting to the Fhem-Server, set "gateway": {"run": false}. However the simulator can run simultaneously with the gateway.
 
-**Note:** The actual version supports only the service `Switch`, more services coming soon.
+**Note:** The actual simulator version supports:
+
+* Outlet
+* Switch
+* TemperatureSensor
 
 Type the simulator-address in your browser:
 

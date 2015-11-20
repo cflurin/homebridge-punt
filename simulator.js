@@ -47,8 +47,8 @@ Simulator.prototype.startServer = function() {
         "plugin": this.plugin_name,
         "version": Utils.getPluginVersion(),
         "latest": Utils.get_npmVersion(this.plugin_name),
-        "data_type": "info",     // [info, value]
-        "index": ""           // [all, 0,1,2,...]
+        "data_type": "info",    // [info, value]
+        "index": ""             // [all, 0,1,2,...]
       }
     };
     
@@ -65,14 +65,24 @@ Simulator.prototype.startServer = function() {
       var index = data.index;
       //this.log("Simulator received: %s %s %s", index, t_characteristic, data.value);
       
-      if (this.gateway.run) { 
-        this.Accessories[index].Gateway.set(t_characteristic, data.value, function() {
-          // nothing
-        });
-      }
-      else {
-        this.Accessories[index].i_value[t_characteristic] = data.value;        
-        this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
+      switch(t_characteristic) {
+        case "On":
+          if (this.gateway.run) { 
+            this.Accessories[index].Gateway.set(t_characteristic, data.value, function() {
+              // nothing
+            });
+          }
+          else {
+            this.Accessories[index].i_value[t_characteristic] = data.value;        
+            this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
+          }
+        break;
+        
+        case "CurrentTemperature":
+          var value = parseFloat(data.value);
+          this.Accessories[index].i_value[t_characteristic] = value;        
+          this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
+        break;
       }
       
       this.refresh(index);
@@ -136,7 +146,3 @@ Simulator.prototype.sendData = function(data) {
     }.bind(this));
   }
 }
-
-
-
-

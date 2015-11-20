@@ -143,7 +143,8 @@ Accessory.prototype.predifined_service = function(Service, Characteristic) {
     case "TemperatureSensor":
       this.i_characteristic.CurrentTemperature = this.service
         .getCharacteristic(Characteristic.CurrentTemperature)
-        .on('get', function(callback) {this.get("CurrentTemperature", callback)}.bind(this))
+        .on('get', function(callback) {this.get("CurrentTemperature", callback)}.bind(this));
+      this.i_characteristic.CurrentTemperature.setProps({ maxValue: 80, minValue: -20 });
       if (this.init_default) this.i_value.CurrentTemperature = 0;
       break;
     
