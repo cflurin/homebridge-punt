@@ -107,6 +107,7 @@ Homebridge-punt has an integrated simulator. To run homebridge-punt in simulator
 
 * Outlet
 * Switch
+* ContactSensor
 * TemperatureSensor
 
 Type the simulator-address in your browser:
