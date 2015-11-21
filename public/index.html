@@ -11,21 +11,29 @@ var ws;
 
 $(document).on("pagecreate", "#page1", function() {
   var header = document.getElementById("header");
-  $(header).html('<h3 class="msg">Simulator  <span id="h-status"></span></h3>');
+  var menu = '<a href="#myPanel" class="menu_icon ui-btn ui-corner-all ui-btn-inline ui-icon-bars ui-btn-icon-notext"></a>';
+  $(header).html('<h3 class="pleft"><span>'+menu+'<span>Simulator</span><span id="hstatus"></span><span id="btn_con"></span></h3>');
+  
   $(document).ready(startWS);
 });
 
 function startWS() {
-  var origin = window.document.location.origin.replace(/http/, 'ws');
+  origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
   ws.onopen = function (event) {
-    displayMessage("#h-status", "connected", "YellowGreen");
+    displayMessage("#hstatus", "connected", "YellowGreen");
   }
   ws.onclose = function (event) {
-    displayMessage("#h-status", "disconnected", "Tomato");
+    displayMessage("#hstatus", "disconnected", "Tomato");
+    var a ='<a href="#" id="connect" class="ui-btn ui-mini ui-corner-all ui-btn-inline ui-icon-forward ui-btn-icon-notext"</a>';
+    $("#btn_con").html(a);
+    
+    $("#connect").on("tap",  function(event) {
+      location.reload();
+    });
   }
   ws.onmessage = function (event) {
-    //displayMessage("#message", event.data, "YellowGreen")
+    //displayMessage("#debug", event.data, "YellowGreen")
     var j_data = JSON.parse(event.data);
     switch (j_data.label.data_type) {
       case "info":
@@ -48,7 +56,7 @@ function displayMessage(output, message, color) {
 }
 
 function updateView(data) {
-  //displayMessage("#message", JSON.stringify(data), "SteelBlue");
+  //displayMessage("#debug", JSON.stringify(data), "SteelBlue");
   var data_view = document.getElementById('data_view');
   if (!data_view) {
     createView(data);
@@ -76,6 +84,7 @@ function parsing(i, value) {
     var ct = value.CurrentTemperature.toFixed(1);
     var temp = document.getElementById("temp"+i);
     $(temp).val(ct);
+    $(temp).slider('refresh');
   }
 }
 
@@ -92,7 +101,7 @@ function setBtnColor(i, value) {
 }
 
 function createView(data) {
-  //displayMessage("#message", JSON.stringify(data), "SteelBlue");
+  //displayMessage("#debug", JSON.stringify(data), "SteelBlue");
   var grid = $('<div class="ui-grid-a ui-responsive" id="data_view">');
   var btn_class = 'ui-btn ui-mini ui-btn-inline';
   var ba = '<div class="ui-block-a">';
@@ -104,76 +113,53 @@ function createView(data) {
   
   for (i = 0; i < data.accessories.length; i++) {
     //log += JSON.stringify(data.accessories[i]) + "<br>";
-    //displayMessage("#message3", log, "SteelBlue");
+    //displayMessage("#debug", log, "SteelBlue");
     block_a = $(ba+data.accessories[i].name+be);
     grid.append(block_a);
 
     var value = data.accessories[i].value;
     if (jQuery.type(value.On) === "boolean") {
-      var btn_off_elem = '<a href="#" id="btn_off'+i+'" class="btn_off '+btn_class+'">off</a>';
-      var btn_on_elem = '<a href="#" id="btn_on'+i+'" class="btn_on '+btn_class+'">on</a>';
+      var btn_off_elem = '<a href="#" id="btn_off'+i+'" data-i="'+i+'" class="btn '+btn_class+'">off</a>';
+      var btn_on_elem = '<a href="#" id="btn_on'+i+'" data-i="'+i+'" class="btn '+btn_class+'">on</a>';
       block_b =$(bb+btn_off_elem+btn_on_elem+be);
       grid.append(block_b);
     }
     if (jQuery.type(value.CurrentTemperature) === "number") {
-      block_b = $(bb+'<input id="temp'+i+'" class="temp" type="range" min="-20" max="50" value="15" data-highlight="true" data-popup-enabled="true">'+be);
+      block_b = $(bb+'<input id="temp'+i+'" data-i="'+i+'" class="temp" type="range" min="-20" max="60" value="20" data-highlight="true" data-popup-enabled="true">'+be);
       grid.append(block_b);
     }
     if (jQuery.type(value.ContactSensorState) === "number") {
       var label = '<div>0: Contact Detected 1: Contact Not Detected</div>';      
-      block_b = $(bb+'<select id="contact'+i+'" class="contact" data-role="flipswitch"><option value="1">1</option><option value="0">0</option></select>'+label+be);
+      block_b = $(bb+'<div id="flipswitchWrapper"><select id="contact'+i+'" data-i="'+i+'" class="contact ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>'+be);
        grid.append(block_b);
     }
   }
   grid.append(be);
   $("#content").append(grid);
   $("#content").trigger("create");
-  
-  for (i = 0; i < data.accessories.length; i++) {
-    var value = data.accessories[i].value;
-    if (jQuery.type(value.On) === "boolean") {
-      $("#btn_off"+i).data("msg", {index: i, characteristic: "On", value: false});
-      $("#btn_on"+i).data("msg", {index: i, characteristic: "On", value: true});
-    }
-    if (jQuery.type(value.CurrentTemperature) === "number") {
-      $("#temp"+i).data("msg", {index: i, characteristic: "CurrentTemperature", value: 0});
-    }
-    if (jQuery.type(value.ContactSensorState) === "number") {
-      $("#contact"+i).data("msg", {index: i, characteristic: "ContactSensorState", value: 0});
-    }
-  }
-  
-  $(".btn_off").on("tap",  function(event) {
-    var message = JSON.stringify($(this).data("msg"));
-    //displayMessage("#message", message, "Tomato");
+
+  $(".btn").on("tap",  function(event) {
+    var msg = {index: $(this).data("i"), characteristic: "On", value: $(this).text() == "off" ? false: true};
+    var message = JSON.stringify(msg);
+    //displayMessage("#debug", message, "Blue");
     setTimeout(function() {
       ws.send(message);
     });  
   });
   
-  $(".btn_on").on("tap", function(event) {
-    var message = JSON.stringify($(this).data("msg"));
-    //displayMessage("#message", message, "Blue");
-    setTimeout(function() {
-      ws.send(message);
-    });
-  });
-  
   $(".temp").on("slidestop", function(event) {
-    var msg = $(this).data("msg");
-    msg.value = $(this).val();
+    var msg = {index: $(this).data("i"), characteristic: "CurrentTemperature", value: $(this).val()};
     var message = JSON.stringify(msg);
-    //displayMessage("#message", message, "Blue");
+    //displayMessage("#debug", message, "Blue");
     setTimeout(function() {
       ws.send(message);
     });
   });
   
   $(".contact").on("change", function(event) {
-    var msg = $(this).data("msg");
-    msg.value = $(this).val();
+    var msg = {index: $(this).data("i"), characteristic: "ContactSensorState", value: $(this).val()};
     var message = JSON.stringify(msg);
-    //displayMessage("#message", message, "Blue");
+    //displayMessage("#debug", message, "Blue");
     setTimeout(function() {
       ws.send(message);
     });
@@ -184,18 +170,23 @@ function createView(data) {
 </head>
 <body>
   <div data-role="page" id="page1">
-    <div data-role="header">
+  
+    <div data-role="panel" id="myPanel"> 
+      <h3>homebridge-punt</h3>
+      <p>This is a work in progress! Please visit homebridge-punt github for the latest news. Your feedback is welcome.</p>
+    </div> 
+  
+    <div id="header"data-role="header">
       <div id="header"></div>
     </div>
     <div data-role="main" class="ui-content">
       <div id="content"></div>
     </div>
     <div data-role="footer">
-      <div id="footer" class="msg"></div>
-      <div id="error_msg" class="msg"></div>
-      <div id="message" class="msg"></div>
-      <div id="message2" class="msg"></div>
-      <div id="message3" class="msg"></div>
+      <div id="footer" class="pleft"></div>
+      <div id="error_msg" class="pleft"></div>
+      <div id="message" class="pleft"></div>
+      <div id="debug" class="pleft"></div>
     </div>
   </div>     
 </body>

@@ -1,13 +1,39 @@
 body { 
   font-family: Helvetica, san-serif;
 }
-.msg {
-  padding-left: 20px;
-}
 .ui-block-a, .ui-block-b {
 
 }
-.ui-btn {
+#flipswitchWrapper .ui-flipswitch {
+    width:210px;
+    height:30px;
+}
+#flipswitchWrapper .ui-flipswitch-active {
+    padding-left:0px;
+}
+#flipswitchWrapper .ui-flipswitch .ui-flipswitch-on, #flipswitchWrapper .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {
+    width:58px;
+    height:28px;
+    text-indent: -8em;
+}
+#flipswitchWrapper .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {
+    padding-top:0px;
+    margin-left:150px;
+    text-indent: -7em;
+}
+#connect {
+  margin 25px !important; 
+}
+#hstatus {
+  padding-left: 10px; 
+}
+.pleft {
+  padding-left: 20px;
+}
+.menu_icon {
+  height: 28px;
+}
+.btn {
   width: 40px;
   height: 16px;
   margin 5px;
