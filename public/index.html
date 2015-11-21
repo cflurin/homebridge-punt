@@ -11,7 +11,7 @@ var ws;
 
 $(document).on("pagecreate", "#page1", function() {
   var header = document.getElementById("header");
-  var menu = '<a href="#panel1" class="hicon ui-btn ui-corner-all ui-btn-icon-left ui-icon-bars"></a>';
+  var menu = '<a href="#panel1" class="hicon ui-btn ui-btn-c ui-nodisc-icon ui-corner-all ui-btn-icon-left ui-icon-bars"></a>';
   $(header).html('<h3 class="pla"><span>'+menu+'<span class="plb">Simulator</span><span id="hstatus"></span><span id="btn_con"></span></h3>');
   
   $(document).ready(startWS);
@@ -25,7 +25,7 @@ function startWS() {
   }
   ws.onclose = function (event) {
     displayMessage("#hstatus", "disconnected", "Tomato");
-    var a ='<a href="#" id="connect" class="hicon ui-btn ui-corner-all ui-btn-icon-left ui-icon-forward"></a>';
+    var a ='<a href="#" id="connect" class="hicon ui-btn ui-btn-c ui-nodisc-icon ui-corner-all ui-btn-icon-left ui-icon-forward"></a>';
     $("#btn_con").html(a);
     
     $("#connect").on("tap",  function(event) {
