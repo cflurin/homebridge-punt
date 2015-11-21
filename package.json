@@ -1,6 +1,6 @@
 {
   "name": "homebridge-punt",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Homebridge Plugin for Fhem",
   "license": "ISC",
   "author": {

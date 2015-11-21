@@ -21,17 +21,20 @@ body {
     margin-left:150px;
     text-indent: -7em;
 }
-#connect {
-  margin 25px !important; 
-}
-#hstatus {
+#hstatus, #btn_con {
   padding-left: 10px; 
 }
-.pleft {
+.pla {
   padding-left: 20px;
 }
-.menu_icon {
+.plb {
+  padding-left: 10px;
+}
+.hicon {
+  width: 32px;
   height: 28px;
+  padding: 0px;
+  margin: 0px;
 }
 .btn {
   width: 40px;

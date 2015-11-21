@@ -11,8 +11,8 @@ var ws;
 
 $(document).on("pagecreate", "#page1", function() {
   var header = document.getElementById("header");
-  var menu = '<a href="#myPanel" class="menu_icon ui-btn ui-corner-all ui-btn-inline ui-icon-bars ui-btn-icon-notext"></a>';
-  $(header).html('<h3 class="pleft"><span>'+menu+'<span>Simulator</span><span id="hstatus"></span><span id="btn_con"></span></h3>');
+  var menu = '<a href="#panel1" class="hicon ui-btn ui-corner-all ui-btn-icon-left ui-icon-bars"></a>';
+  $(header).html('<h3 class="pla"><span>'+menu+'<span class="plb">Simulator</span><span id="hstatus"></span><span id="btn_con"></span></h3>');
   
   $(document).ready(startWS);
 });
@@ -25,7 +25,7 @@ function startWS() {
   }
   ws.onclose = function (event) {
     displayMessage("#hstatus", "disconnected", "Tomato");
-    var a ='<a href="#" id="connect" class="ui-btn ui-mini ui-corner-all ui-btn-inline ui-icon-forward ui-btn-icon-notext"</a>';
+    var a ='<a href="#" id="connect" class="hicon ui-btn ui-corner-all ui-btn-icon-left ui-icon-forward"></a>';
     $("#btn_con").html(a);
     
     $("#connect").on("tap",  function(event) {
@@ -58,21 +58,15 @@ function displayMessage(output, message, color) {
 function updateView(data) {
   //displayMessage("#debug", JSON.stringify(data), "SteelBlue");
   var data_view = document.getElementById('data_view');
-  if (!data_view) {
-    createView(data);
+  if (!data_view) createView(data);
+  
+  if (data.label.index == "all") {
     for (i = 0; i < data.accessories.length; i++) {
       parsing(i,data.accessories[i].value);
     }
   } else {
-    var value;
-    if (data.label.index == "all") {
-      for (i = 0; i < data.accessories.length; i++) {
-        parsing(i,data.accessories[i].value);
-      }
-    } else {
-      var i = data.label.index;
-      parsing(i,data.accessory.value);
-    }
+    var i = data.label.index;
+    parsing(i,data.accessory.value);
   }
 }
 
@@ -171,22 +165,22 @@ function createView(data) {
 <body>
   <div data-role="page" id="page1">
   
-    <div data-role="panel" id="myPanel"> 
+    <div data-role="panel" id="panel1"> 
       <h3>homebridge-punt</h3>
       <p>This is a work in progress! Please visit homebridge-punt github for the latest news. Your feedback is welcome.</p>
     </div> 
   
-    <div id="header"data-role="header">
+    <div data-role="header">
       <div id="header"></div>
     </div>
     <div data-role="main" class="ui-content">
       <div id="content"></div>
     </div>
     <div data-role="footer">
-      <div id="footer" class="pleft"></div>
-      <div id="error_msg" class="pleft"></div>
-      <div id="message" class="pleft"></div>
-      <div id="debug" class="pleft"></div>
+      <div id="footer" class="pla"></div>
+      <div id="error_msg" class="pla"></div>
+      <div id="message" class="pla"></div>
+      <div id="debug" class="pla"></div>
     </div>
   </div>     
 </body>
