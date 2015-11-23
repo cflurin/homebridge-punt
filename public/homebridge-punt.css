@@ -1,55 +1,76 @@
 body { 
   font-family: Helvetica, san-serif;
 }
-.ui-block-a, .ui-block-b {
-
+.ui-header .ui-title {
+    margin-right: 10%;
+    margin-left: 10%;
 }
-.ui-btn-c {
+.pi-la {
+  padding-left: 20px !important;
+}
+.pi-lb {
+  padding-left: 10px !important;
+}
+.pi-btn {
+  width: 40px;
+  height: 16px;
+  margin 0px;
+}
+.pi-btn-h {
+  width: 32px;
+  height: 28px;
+  padding: 0px !important;
+  margin-left: 10px !important;
+  margin-top: 5px !important;
   background-color: DimGray!important;
-  border: none;
-  box-shadow: none;
+  border: none !important;
+  box-shadow: none !important;
+}
+.pi-btn-vh {
+  visibility: hidden;
+}
+.pi-btn-tap {
+  background-color: lightsteelblue !important; 
+}
+.pi-grid .ui-block-a {
+  border-color: lightgray!important;
+  width: 25% !important;
+  border-top: 1px solid gray;
+  padding-top: 10px;
+  font-weight: bold;
+}
+.pi-grid .ui-block-b {
+  border-color: lightgray!important;
+  width: 30% !important;
+  border-top: 1px solid gray;
+  padding-top: 10px;
+}
+.pi-grid .ui-block-c {
+  border-color: lightgray!important;
+  border-top: 1px solid gray;
+  padding-left: 10px;
+  min-width: 45%;
+}
+.pi-grid .ui-block-a:nth-child(1), :nth-child(2), :nth-child(3) {
+  border-top: none !important;
+}
+#debug {
+  color: steelblue;
 }
 #flipswitchWrapper .ui-flipswitch {
-    width:210px;
+    width:170px;
     height:30px;
 }
 #flipswitchWrapper .ui-flipswitch-active {
     padding-left:0px;
 }
 #flipswitchWrapper .ui-flipswitch .ui-flipswitch-on, #flipswitchWrapper .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {
-    width:58px;
+    width:38px;
     height:28px;
-    text-indent: -8em;
+    text-indent: -6.2em;
 }
 #flipswitchWrapper .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {
     padding-top:0px;
-    margin-left:150px;
-    text-indent: -7em;
-}
-#hstatus, #btn_con {
-  padding-left: 10px; 
-}
-.pla {
-  padding-left: 20px;
-}
-.plb {
-  padding-left: 10px;
-}
-.hicon {
-  width: 32px;
-  height: 28px;
-  padding: 0px;
-  margin: 0px;
-}
-.btn {
-  width: 40px;
-  height: 16px;
-  margin 5px;
-}
-.btn_tap {
-  background-color: lightsteelblue !important; 
-}
-.temp {
-  width: 100%;
-  height: 26px;
+    margin-left:131px;
+    text-indent: -6.2em;
 }

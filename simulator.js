@@ -77,6 +77,20 @@ Simulator.prototype.startServer = function() {
             this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
           }
           break;
+        case "OutletInUse":
+          this.Accessories[index].i_value[t_characteristic] = data.value;        
+          this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
+          break;
+        case "CurrentPosition":
+          var value = parseInt(data.value);
+          this.Accessories[index].i_value[t_characteristic] = value;        
+          this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
+          break;
+        case "TargetPosition":
+          var value = parseInt(data.value);
+          this.Accessories[index].i_value[t_characteristic] = value;        
+          this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
+          break;
         case "CurrentTemperature":
           var value = parseFloat(data.value);
           this.Accessories[index].i_value[t_characteristic] = value;        

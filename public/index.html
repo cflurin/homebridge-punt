@@ -8,12 +8,9 @@
 <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <script>
 var ws;
+var logmsg = "";
 
 $(document).on("pagecreate", "#page1", function() {
-  var header = document.getElementById("header");
-  var menu = '<a href="#panel1" class="hicon ui-btn ui-btn-c ui-nodisc-icon ui-corner-all ui-btn-icon-left ui-icon-bars"></a>';
-  $(header).html('<h3 class="pla"><span>'+menu+'<span class="plb">Simulator</span><span id="hstatus"></span><span id="btn_con"></span></h3>');
-  
   $(document).ready(startWS);
 });
 
@@ -21,28 +18,25 @@ function startWS() {
   origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
   ws.onopen = function (event) {
-    displayMessage("#hstatus", "connected", "YellowGreen");
+    displayMessage("#status", "connected", "YellowGreen");   
   }
   ws.onclose = function (event) {
-    displayMessage("#hstatus", "disconnected", "Tomato");
-    var a ='<a href="#" id="connect" class="hicon ui-btn ui-btn-c ui-nodisc-icon ui-corner-all ui-btn-icon-left ui-icon-forward"></a>';
-    $("#btn_con").html(a);
-    
-    $("#connect").on("tap",  function(event) {
+    displayMessage("#status", "disconnected", "Tomato");   
+    $("#p_reload").css("visibility", "visible");
+    $("#p_reload").on("tap", function(event) {
       location.reload();
     });
   }
   ws.onmessage = function (event) {
-    //displayMessage("#debug", event.data, "YellowGreen")
-    var j_data = JSON.parse(event.data);
-    switch (j_data.label.data_type) {
+    //log(event.data);
+    var jdata = JSON.parse(event.data);
+    switch (jdata.label.data_type) {
       case "info":
-        var footer = document.getElementById("footer");
-        $(footer).html('<h3>homebridge-punt <span id="version"></span></h3>');
-        displayMessage("#version", "v"+j_data.label.version, "SteelBlue");
+        $("#fc").html('homebridge-punt <span id="version"></span>');
+        displayMessage("#version", "v"+jdata.label.version, "SteelBlue");
       break;
       case "value":
-        updateView(j_data);
+        updateView(jdata);
       break;
     }
   }
@@ -52,11 +46,16 @@ function startWS() {
 }
 
 function displayMessage(output, message, color) {
-  $(output).html('<span style="color:' + color + '">' + message + '</span>');
+  $(output).html('<span style="color:'+color+'">'+message+'</span>');
+}
+
+function log(message) {
+  logmsg += message + '<br>';
+  $("#debug").html('<span>'+logmsg+'</span>');
 }
 
 function updateView(data) {
-  //displayMessage("#debug", JSON.stringify(data), "SteelBlue");
+  //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
   
@@ -71,89 +70,118 @@ function updateView(data) {
 }
 
 function parsing(i, value) {
-  if (jQuery.type(value.On) === "boolean") {
-    setBtnColor(i, value.On);
-  }
-  if (jQuery.type(value.CurrentTemperature) === "number") {
-    var ct = value.CurrentTemperature.toFixed(1);
-    var temp = document.getElementById("temp"+i);
-    $(temp).val(ct);
-    $(temp).slider('refresh');
+  //log(JSON.stringify(value));
+  var keys = Object.keys(value);
+  for (k = 0; k < keys.length; k++) {
+    var c = keys[k];
+    switch(c) {
+      case "On":
+      case "OutletInUse":
+        setBtnColor(c, i, value[c]);
+        break;
+      case "CurrentTemperature":
+      case "CurrentPosition":
+      case "TargetPosition":
+        p_id = setVal(c, i, value);
+        $(p_id).slider("refresh");
+        break;
+      case  "ContactSensorState":
+        p_id = setVal(c, i, value);
+        $(p_id).flipswitch("refresh");
+        break;
+      default:
+    }
   }
 }
 
-function setBtnColor(i, value) {
-  var btn_off = document.getElementById("btn_off"+i);
-  var btn_on = document.getElementById("btn_on"+i);
+function setVal(c, i, value) {
+  var v = value[c];
+  var p_id = document.getElementById(c+i);
+  $(p_id).val(v);
+  //log(c+" "+i+" "+v);
+  return p_id;
+}
+
+function setBtnColor(c, i, value) {
+  var btn_off = document.getElementById("off"+c+i);
+  var btn_on = document.getElementById("on"+c+i);
   if (value) {
-    $(btn_on).addClass("btn_tap");
-    $(btn_off).removeClass("btn_tap");
+    $(btn_on).addClass("pi-btn-tap");
+    $(btn_off).removeClass("pi-btn-tap");
   } else {
-    $(btn_off).addClass("btn_tap");
-    $(btn_on).removeClass("btn_tap");
+    $(btn_off).addClass("pi-btn-tap");
+    $(btn_on).removeClass("pi-btn-tap");
   }
 }
 
 function createView(data) {
-  //displayMessage("#debug", JSON.stringify(data), "SteelBlue");
-  var grid = $('<div class="ui-grid-a ui-responsive" id="data_view">');
-  var btn_class = 'ui-btn ui-mini ui-btn-inline';
+  //log(JSON.stringify(data));
+  var grid = $('<div class="ui-grid-b ui-responsive pi-grid" id="data_view">');
   var ba = '<div class="ui-block-a">';
   var bb = '<div class="ui-block-b">';
+  var bc = '<div class="ui-block-c">';
   var be = '</div>';
-  var block_a;
-  var block_b;
-  var log = "";
+  var blocka, blockb, blockc;
+  var html = "";
   
   for (i = 0; i < data.accessories.length; i++) {
-    //log += JSON.stringify(data.accessories[i]) + "<br>";
-    //displayMessage("#debug", log, "SteelBlue");
-    block_a = $(ba+data.accessories[i].name+be);
-    grid.append(block_a);
-
+    //log(JSON.stringify(data.accessories[i]));    
     var value = data.accessories[i].value;
-    if (jQuery.type(value.On) === "boolean") {
-      var btn_off_elem = '<a href="#" id="btn_off'+i+'" data-i="'+i+'" class="btn '+btn_class+'">off</a>';
-      var btn_on_elem = '<a href="#" id="btn_on'+i+'" data-i="'+i+'" class="btn '+btn_class+'">on</a>';
-      block_b =$(bb+btn_off_elem+btn_on_elem+be);
-      grid.append(block_b);
-    }
-    if (jQuery.type(value.CurrentTemperature) === "number") {
-      block_b = $(bb+'<input id="temp'+i+'" data-i="'+i+'" class="temp" type="range" min="-20" max="60" value="20" data-highlight="true" data-popup-enabled="true">'+be);
-      grid.append(block_b);
-    }
-    if (jQuery.type(value.ContactSensorState) === "number") {
-      var label = '<div>0: Contact Detected 1: Contact Not Detected</div>';      
-      block_b = $(bb+'<div id="flipswitchWrapper"><select id="contact'+i+'" data-i="'+i+'" class="contact ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>'+be);
-       grid.append(block_b);
+    var keys = Object.keys(value);
+    //log("keys "+keys);
+    
+    for (k = 0; k < keys.length; k++) {
+      var c = keys[k];
+      //log("c= >"+c+"<"+" "+ keys.length);
+      switch(c) {
+        case "On":
+          html = '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">off</a>';
+          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">on</a>';
+        break;
+        case "OutletInUse":
+          html = '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">off</a>';
+          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">on</a>';
+        break;
+        case "CurrentTemperature":
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
+          break;
+        case "CurrentPosition":
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="0" max="100" value="0" data-highlight="true" data-popup-enabled="true">';
+          break;
+        case "TargetPosition":
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="0" max="100" value="0" data-highlight="true" data-popup-enabled="true">';
+          break;
+        case "ContactSensorState":
+          html = '<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+          break;
+        default:
+      }
+      if (k == 0) { blocka = $(ba+data.accessories[i].name+be); }
+      else { blocka = $('<div class="ui-block-a" style="border-top: none">'+be); }
+      grid.append(blocka);
+      blockb = $(bb+c+be);
+      grid.append(blockb);
+      blockc = $(bc+html+be);
+      grid.append(blockc);
     }
   }
   grid.append(be);
   $("#content").append(grid);
   $("#content").trigger("create");
 
-  $(".btn").on("tap",  function(event) {
-    var msg = {index: $(this).data("i"), characteristic: "On", value: $(this).text() == "off" ? false: true};
+  $(".onoff").on("tap",  function(event) {
+    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).text() == "off" ? false: true};
     var message = JSON.stringify(msg);
-    //displayMessage("#debug", message, "Blue");
+    //log(message);
     setTimeout(function() {
       ws.send(message);
     });  
   });
-  
-  $(".temp").on("slidestop", function(event) {
-    var msg = {index: $(this).data("i"), characteristic: "CurrentTemperature", value: $(this).val()};
+    
+  $(".nr").on("change", function(event) {
+    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
-    //displayMessage("#debug", message, "Blue");
-    setTimeout(function() {
-      ws.send(message);
-    });
-  });
-  
-  $(".contact").on("change", function(event) {
-    var msg = {index: $(this).data("i"), characteristic: "ContactSensorState", value: $(this).val()};
-    var message = JSON.stringify(msg);
-    //displayMessage("#debug", message, "Blue");
+    //log(message);
     setTimeout(function() {
       ws.send(message);
     });
@@ -171,16 +199,18 @@ function createView(data) {
     </div> 
   
     <div data-role="header">
-      <div id="header"></div>
+      <a href="#panel1" class="pi-btn-h ui-btn ui-nodisc-icon ui-corner-all ui-icon-bars ui-btn-icon-left"></a>
+      <h3>Simulator<span id="status" class="pi-lb"></span></h3>
+      <a href="#" id="p_reload" class="pi-btn-h pi-btn-vh ui-btn ui-nodisc-icon ui-corner-all ui-icon-refresh ui-btn-icon-right"></a>
     </div>
     <div data-role="main" class="ui-content">
       <div id="content"></div>
     </div>
     <div data-role="footer">
-      <div id="footer" class="pla"></div>
-      <div id="error_msg" class="pla"></div>
-      <div id="message" class="pla"></div>
-      <div id="debug" class="pla"></div>
+      <h1 id="fc"></h1>
+      <div id="error_msg" class="pi-la"></div>
+      <div id="message" class="pi-la"></div>
+      <div id="debug" class="pi-la"></div>
     </div>
   </div>     
 </body>

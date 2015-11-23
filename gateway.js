@@ -93,8 +93,8 @@ Gateway.prototype.get_type = function() {
     
     if (!err && response.statusCode == 200) {
       var r_value = body.trim();
-      //this.log("type: %s %s", this.name, r_value);
-      this.i_device.type = r_value;
+      this.i_device.type = (r_value == "") ? "undefined" : r_value;
+      //this.log("type: %s %s", this.name, this.i_device.type);
       if (this.i_device.type == "EnOcean") this.get_eventMap();
     } 
     else {
@@ -138,6 +138,11 @@ Gateway.prototype.get_eventMap = function() {
 
 Gateway.prototype.get = function(t_characteristic, callback) {
 
+  if (this.i_device.type == "undefined") {
+    callback(null, this.i_value[t_characteristic]);
+    return;
+  }
+  
   if (reading[this.i_characteristic.service][t_characteristic] == "default") {
     callback(null, this.parsing(t_characteristic, null));
     return;
@@ -157,7 +162,7 @@ Gateway.prototype.get = function(t_characteristic, callback) {
       if (!err && response.statusCode == 200) {
         var r_value = body.trim();
         var p_value = this.parsing(t_characteristic, r_value);
-        callback(null, p_value);   
+        callback(null, p_value);
       } 
       else {
         callback(err);
@@ -172,6 +177,10 @@ Gateway.prototype.get = function(t_characteristic, callback) {
 Gateway.prototype.set = function(t_characteristic, value, callback) {
   
   //this.log("set: %s %s", this.name, value);
+  if (this.i_device.type == "undefined") {
+    callback();
+    return;
+  }
   if (value == this.i_value[t_characteristic]) {
     callback();
     return;
