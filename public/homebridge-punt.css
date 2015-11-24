@@ -2,6 +2,10 @@ body {
   font-family: Arial, san-serif;
   font-size: 0.938em;
 }
+.pi-sf {
+  font-size: 0.813em;
+  color: steelblue;
+}
 .ui-header .ui-title {
     margin-right: 10%;
     margin-left: 10%;

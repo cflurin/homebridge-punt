@@ -106,17 +106,17 @@ Accessory.prototype.predifined_service = function(Service, Characteristic) {
         .on('set', function(value, callback) {this.set("Brightness", value, callback)}.bind(this));
       if (this.init_default) this.i_value.Brightness = 0;  // 0 .. 100
         
-      this.i_characteristic.Hue = this.service
-        .addCharacteristic(Characteristic.Hue)
-        .on('get', function(callback) {this.get("Hue", callback)}.bind(this))
-        .on('set', function(value, callback) {this.set("Hue", value, callback)}.bind(this));
-      if (this.init_default) this.i_value.Hue = 0; // 0 .. 360
-        
       this.i_characteristic.Saturation = this.service
         .addCharacteristic(Characteristic.Saturation)
         .on('get', function(callback) {this.get("Saturation", callback)}.bind(this))
         .on('set', function(value, callback) {this.set("Saturation", value, callback)}.bind(this));
       if (this.init_default) this.i_value.Saturation = 0; // 0 .. 100
+      
+      this.i_characteristic.Hue = this.service
+        .addCharacteristic(Characteristic.Hue)
+        .on('get', function(callback) {this.get("Hue", callback)}.bind(this))
+        .on('set', function(value, callback) {this.set("Hue", value, callback)}.bind(this));
+      if (this.init_default) this.i_value.Hue = 0; // 0 .. 360
       break;
       
     case "Outlet":

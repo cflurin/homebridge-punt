@@ -81,26 +81,22 @@ Simulator.prototype.startServer = function() {
           this.Accessories[index].i_value[t_characteristic] = data.value;        
           this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
           break;
-        case "CurrentPosition":
-          var value = parseInt(data.value);
-          this.Accessories[index].i_value[t_characteristic] = value;        
-          this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
-          break;
-        case "TargetPosition":
-          var value = parseInt(data.value);
-          this.Accessories[index].i_value[t_characteristic] = value;        
-          this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
-          break;
         case "CurrentTemperature":
           var value = parseFloat(data.value);
           this.Accessories[index].i_value[t_characteristic] = value;        
           this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
           break;
+        case "CurrentPosition":
+        case "TargetPosition":
         case "ContactSensorState":
+        case "Brightness":
+        case "Hue":
+        case "Saturation":
           var value = parseInt(data.value);
           this.Accessories[index].i_value[t_characteristic] = value;        
           this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
           break;
+        default:
       }
       
       this.refresh(index);
@@ -151,12 +147,12 @@ Simulator.prototype.refresh = function(index) {
     }
   }
   else {
-    var set = {
+    var i_data = {
       "name": this.Accessories[index].name,
       "service": this.Accessories[index].i_service,
       "value": this.Accessories[index].i_value
     };
-    var data = {"label": {"data_type": "value", "index": index}, "accessory": set};
+    var data = {"label": {"data_type": "value", "index": index}, "accessory": i_data};
   }
 
   this.sendData(data);

@@ -84,24 +84,21 @@ function parsing(i, value) {
       case "CurrentTemperature":
       case "CurrentPosition":
       case "TargetPosition":
-        p_id = setVal(c, i, value);
+      case "Brightness":
+      case "Hue":
+      case "Saturation":
+        var p_id = document.getElementById(c+i);
+        $(p_id).val(value[c]);
         $(p_id).slider("refresh");
         break;
       case  "ContactSensorState":
-        p_id = setVal(c, i, value);
+        var p_id = document.getElementById(c+i);
+        $(p_id).val(value[c]);
         $(p_id).flipswitch("refresh");
         break;
       default:
     }
   }
-}
-
-function setVal(c, i, value) {
-  var v = value[c];
-  var p_id = document.getElementById(c+i);
-  $(p_id).val(v);
-  //log(c+" "+i+" "+v);
-  return p_id;
 }
 
 function setBtnColor(c, i, value) {
@@ -148,21 +145,24 @@ function createView(data) {
           html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
           html += be;
         break;
+        case "ContactSensorState":
+          html = '<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="flipswitch" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+          break;
         case "CurrentTemperature":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
           break;
         case "CurrentPosition":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="0" max="100" value="0" data-highlight="true" data-popup-enabled="true">';
-          break;
         case "TargetPosition":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="0" max="100" value="0" data-highlight="true" data-popup-enabled="true">';
+        case "Brightness":
+        case "Saturation":
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="0" max="100" value="0" data-highlight="true" data-popup-enabled="true">';
           break;
-        case "ContactSensorState":
-          html = '<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+        case "Hue":
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="0" max="360" value="0" data-highlight="true" data-popup-enabled="true">';
           break;
         default:
       }
-      if (k == 0) {blocka = $(ba+data.accessories[i].name+"<br>[ "+data.accessories[i].service+" ]"+be);}
+      if (k == 0) {blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].service+'</span>'+be);}
       else {blocka = $('<div class="ui-block-a pi-ntb">'+be);}
       grid.append(blocka);
       blockb = $(bb+c+be);
@@ -184,7 +184,16 @@ function createView(data) {
     });  
   });
     
-  $(".nr").on("change", function(event) {
+  $(".slider").on("slidestop", function(event) {
+    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
+    var message = JSON.stringify(msg);
+    log(message);
+    setTimeout(function() {
+      ws.send(message);
+    });
+  });
+  
+  $(".slipswitch").on("change", function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
     //log(message);
