@@ -27,11 +27,14 @@ body {
   border: none !important;
   box-shadow: none !important;
 }
+.pi-btn-tap {
+  background-color: lightsteelblue !important; 
+}
 .pi-vh {
   visibility: hidden;
 }
-.pi-btn-tap {
-  background-color: lightsteelblue !important; 
+.pi-ntb {
+  border-top: none !important;
 }
 .pi-grid .ui-block-a {
   border-color: lightgray !important;
@@ -49,7 +52,6 @@ body {
 .pi-grid .ui-block-c {
   border-color: lightgray !important;
   border-top: 1px solid gray;
-  padding-left: 10px;
   min-width: 50%;
 }
 

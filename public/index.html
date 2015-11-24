@@ -162,8 +162,8 @@ function createView(data) {
           break;
         default:
       }
-      if (k == 0) {blocka = $(ba+data.accessories[i].name+"<br>["+data.accessories[i].service+"]"+be);}
-      else {blocka = $('<div class="ui-block-a" style="border-top: none">'+be);}
+      if (k == 0) {blocka = $(ba+data.accessories[i].name+"<br>[ "+data.accessories[i].service+" ]"+be);}
+      else {blocka = $('<div class="ui-block-a pi-ntb">'+be);}
       grid.append(blocka);
       blockb = $(bb+c+be);
       grid.append(blockb);
@@ -174,8 +174,6 @@ function createView(data) {
   grid.append(be);
   $("#content").append(grid);
   $("#content").trigger("create");
-  
-  //$("#onOn0").button("refresh");
 
   $(".onoff").on("tap",  function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).text() == "off" ? false: true};
