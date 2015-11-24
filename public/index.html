@@ -96,6 +96,11 @@ function parsing(i, value) {
         $(p_id).val(value[c]);
         $(p_id).flipswitch("refresh");
         break;
+      case  "PositionState":
+        var p_id = document.getElementById(c+i);
+        $(p_id).val(value[c]);
+        $(p_id).selectmenu("refresh");
+        break;
       default:
     }
   }
@@ -145,11 +150,16 @@ function createView(data) {
           html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
           html += be;
         break;
+        case "CurrentTemperature":
+          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
+          break;
         case "ContactSensorState":
           html = '<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="flipswitch" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
           break;
-        case "CurrentTemperature":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
+        case "PositionState":
+          html = '<fieldset class="ui-field-contain"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
+          html += '<option value="0">Decreasing</option><option value="1">Increasing</option><option value="2">Stopped</option>';
+          html += '</select></fieldset>';
           break;
         case "CurrentPosition":
         case "TargetPosition":
@@ -197,6 +207,15 @@ function createView(data) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
     //log(message);
+    setTimeout(function() {
+      ws.send(message);
+    });
+  });
+  
+    $(".select").on("change", function(event) {
+    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
+    var message = JSON.stringify(msg);
+    log("select: "+message);
     setTimeout(function() {
       ws.send(message);
     });

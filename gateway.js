@@ -31,7 +31,7 @@ reading.TemperatureSensor = {};
 reading.TemperatureSensor.CurrentTemperature = "temperature";
 
 reading.WindowCovering = {};
-reading.WindowCovering.positionSlat = "default"; // no request
+reading.WindowCovering.PositionState = "default"; // no request
 reading.WindowCovering.CurrentPosition = "dim";
 reading.WindowCovering.TargetPosition = "dim";
 reading.WindowCovering.CurrentHorizontalTiltAngle = "positionSlat";
@@ -142,9 +142,9 @@ Gateway.prototype.get = function(t_characteristic, callback) {
     callback(null, this.i_value[t_characteristic]);
     return;
   }
-  
+
   if (reading[this.i_characteristic.service][t_characteristic] == "default") {
-    callback(null, this.parsing(t_characteristic, null));
+    callback(null, this.i_value[t_characteristic]);
     return;
   }
   

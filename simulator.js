@@ -73,27 +73,28 @@ Simulator.prototype.startServer = function() {
             });
           }
           else {
-            this.Accessories[index].i_value[t_characteristic] = data.value;        
+            this.Accessories[index].i_value[t_characteristic] = data.value;
             this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
           }
           break;
         case "OutletInUse":
-          this.Accessories[index].i_value[t_characteristic] = data.value;        
+          this.Accessories[index].i_value[t_characteristic] = data.value;      
           this.Accessories[index].i_characteristic[t_characteristic].setValue(data.value);
           break;
         case "CurrentTemperature":
           var value = parseFloat(data.value);
-          this.Accessories[index].i_value[t_characteristic] = value;        
+          this.Accessories[index].i_value[t_characteristic] = value;
           this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
           break;
         case "CurrentPosition":
         case "TargetPosition":
         case "ContactSensorState":
+        case "PositionState":
         case "Brightness":
         case "Hue":
         case "Saturation":
           var value = parseInt(data.value);
-          this.Accessories[index].i_value[t_characteristic] = value;        
+          this.Accessories[index].i_value[t_characteristic] = value;
           this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
           break;
         default:

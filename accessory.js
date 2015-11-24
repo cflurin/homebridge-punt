@@ -173,7 +173,7 @@ Accessory.prototype.predifined_service = function(Service, Characteristic) {
       this.i_characteristic.PositionState = this.service
         .getCharacteristic(Characteristic.PositionState)
         .on('get', function(callback) {this.get("PositionState", callback)}.bind(this));
-      //this.i_value.PositionState = Characteristic.PositionState.STOPPED;
+      this.i_value.PositionState = Characteristic.PositionState.STOPPED;
 
       // Optional Characteristics
       if (this.operationmode == "venetian") {
