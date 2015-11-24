@@ -1,5 +1,6 @@
 body { 
-  font-family: Helvetica, san-serif;
+  font-family: Arial, san-serif;
+  font-size: 0.938em;
 }
 .ui-header .ui-title {
     margin-right: 10%;
@@ -14,46 +15,44 @@ body {
 .pi-btn {
   width: 40px;
   height: 16px;
-  margin 0px;
 }
 .pi-btn-h {
   width: 32px;
   height: 28px;
   padding: 0px !important;
   margin-left: 10px !important;
+  margin-right: 10px !important;
   margin-top: 5px !important;
   background-color: DimGray!important;
   border: none !important;
   box-shadow: none !important;
 }
-.pi-btn-vh {
+.pi-vh {
   visibility: hidden;
 }
 .pi-btn-tap {
   background-color: lightsteelblue !important; 
 }
 .pi-grid .ui-block-a {
-  border-color: lightgray!important;
+  border-color: lightgray !important;
   width: 25% !important;
   border-top: 1px solid gray;
-  padding-top: 10px;
-  font-weight: bold;
+  padding-top: 3px;
+  /*font-weight: bold;*/
 }
 .pi-grid .ui-block-b {
-  border-color: lightgray!important;
-  width: 30% !important;
+  border-color: lightgray !important;
+  width: 25% !important;
   border-top: 1px solid gray;
-  padding-top: 10px;
+  padding-top: 3px;
 }
 .pi-grid .ui-block-c {
-  border-color: lightgray!important;
+  border-color: lightgray !important;
   border-top: 1px solid gray;
   padding-left: 10px;
-  min-width: 45%;
+  min-width: 50%;
 }
-.pi-grid .ui-block-a:nth-child(1), :nth-child(2), :nth-child(3) {
-  border-top: none !important;
-}
+
 #debug {
   color: steelblue;
 }

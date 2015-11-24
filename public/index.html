@@ -18,7 +18,8 @@ function startWS() {
   origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
   ws.onopen = function (event) {
-    displayMessage("#status", "connected", "YellowGreen");   
+    displayMessage("#status", "connected", "YellowGreen");  
+    $("#p_title").css("visibility", "visible");
   }
   ws.onclose = function (event) {
     displayMessage("#status", "disconnected", "Tomato");   
@@ -29,15 +30,16 @@ function startWS() {
   }
   ws.onmessage = function (event) {
     //log(event.data);
-    var jdata = JSON.parse(event.data);
-    switch (jdata.label.data_type) {
+    var data = JSON.parse(event.data);
+    switch (data.label.data_type) {
       case "info":
         $("#fc").html('homebridge-punt <span id="version"></span>');
-        displayMessage("#version", "v"+jdata.label.version, "SteelBlue");
-      break;
+        displayMessage("#version", "v"+data.label.version, "SteelBlue");
+        break;
       case "value":
-        updateView(jdata);
-      break;
+        updateView(data);
+        break;
+      default:
     }
   }
   ws.onerror = function (event) {
@@ -135,12 +137,16 @@ function createView(data) {
       //log("c= >"+c+"<"+" "+ keys.length);
       switch(c) {
         case "On":
-          html = '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">off</a>';
-          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">on</a>';
+          html = '<div data-role="controlgroup" data-type="horizontal">';
+          html += '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
+          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
+          html += be;
         break;
         case "OutletInUse":
-          html = '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">off</a>';
-          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini ui-btn-inline">on</a>';
+          html = '<div data-role="controlgroup" data-type="horizontal">';
+          html += '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
+          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
+          html += be;
         break;
         case "CurrentTemperature":
           html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="nr" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
@@ -156,8 +162,8 @@ function createView(data) {
           break;
         default:
       }
-      if (k == 0) { blocka = $(ba+data.accessories[i].name+be); }
-      else { blocka = $('<div class="ui-block-a" style="border-top: none">'+be); }
+      if (k == 0) {blocka = $(ba+data.accessories[i].name+"<br>["+data.accessories[i].service+"]"+be);}
+      else {blocka = $('<div class="ui-block-a" style="border-top: none">'+be);}
       grid.append(blocka);
       blockb = $(bb+c+be);
       grid.append(blockb);
@@ -168,6 +174,8 @@ function createView(data) {
   grid.append(be);
   $("#content").append(grid);
   $("#content").trigger("create");
+  
+  //$("#onOn0").button("refresh");
 
   $(".onoff").on("tap",  function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).text() == "off" ? false: true};
@@ -192,16 +200,14 @@ function createView(data) {
 </head>
 <body>
   <div data-role="page" id="page1">
-  
     <div data-role="panel" id="panel1"> 
       <h3>homebridge-punt</h3>
       <p>This is a work in progress! Please visit homebridge-punt github for the latest news. Your feedback is welcome.</p>
     </div> 
-  
     <div data-role="header">
       <a href="#panel1" class="pi-btn-h ui-btn ui-nodisc-icon ui-corner-all ui-icon-bars ui-btn-icon-left"></a>
-      <h3>Simulator<span id="status" class="pi-lb"></span></h3>
-      <a href="#" id="p_reload" class="pi-btn-h pi-btn-vh ui-btn ui-nodisc-icon ui-corner-all ui-icon-refresh ui-btn-icon-right"></a>
+      <h1 id="p_title" class="pi-vh">Simulator<span id="status" class="pi-lb"></span></h1>
+      <a href="#" id="p_reload" class="pi-btn-h pi-vh ui-btn ui-nodisc-icon ui-corner-all ui-icon-refresh ui-btn-icon-right"></a>
     </div>
     <div data-role="main" class="ui-content">
       <div id="content"></div>

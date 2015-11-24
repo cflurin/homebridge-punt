@@ -142,14 +142,23 @@ Simulator.prototype.refresh = function(index) {
   if (index == "all") {
     var data = {"label": {"data_type": "value", "index": index}, "accessories": []};
     for( var i = 0; i < this.Accessories.length; i++ ) {
-      var i_data = {"name": this.Accessories[i].name, "value": this.Accessories[i].i_value};
+      var i_data = {
+        "name": this.Accessories[i].name, 
+        "service": this.Accessories[i].i_service, 
+        "value": this.Accessories[i].i_value
+      };
       data.accessories.push(i_data);
     }
   }
   else {
-    var set = {"name": this.Accessories[index].name, "value": this.Accessories[index].i_value};
+    var set = {
+      "name": this.Accessories[index].name,
+      "service": this.Accessories[index].i_service,
+      "value": this.Accessories[index].i_value
+    };
     var data = {"label": {"data_type": "value", "index": index}, "accessory": set};
   }
+
   this.sendData(data);
 }
 
