@@ -157,7 +157,7 @@ function createView(data) {
           html = '<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="flipswitch" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
           break;
         case "PositionState":
-          html = '<fieldset class="ui-field-contain"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
+          html = '<fieldset class="ui-field-contain" style="width: 50%"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
           html += '<option value="0">Decreasing</option><option value="1">Increasing</option><option value="2">Stopped</option>';
           html += '</select></fieldset>';
           break;
@@ -215,7 +215,7 @@ function createView(data) {
     $(".select").on("change", function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
-    log("select: "+message);
+    //log("select: "+message);
     setTimeout(function() {
       ws.send(message);
     });
