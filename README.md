@@ -1,12 +1,12 @@
 # homebridge-punt
-Homebridge Plugin for Fhem.
-
-If you are new to Homebridge, please first read the Homebridge [documentation](https://www.npmjs.com/package/homebridge).
+Homebridge-punt is a Plugin for the homebridge server that emulates the iOS HomeKit API. The actual Version supports a Gateway to the Fhem-Server and a built-in Accessories-Simulator.
 
 **Note: this is a work in progress.**
 
 ### Installation
 
+If you're new to Homebridge, please first read the Homebridge [documentation](https://www.npmjs.com/package/homebridge).
+You should have a look at the [Wiki](https://github.com/cflurin/homebridge-punt/wiki/Running-Homebridge-on-a-Raspberry-Pi) if you're running on a Raspberry.
 
 Install homebridge:
 ```sh
