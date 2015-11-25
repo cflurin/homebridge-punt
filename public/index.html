@@ -18,15 +18,14 @@ function startWS() {
   origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
   ws.onopen = function (event) {
-    displayMessage("#status", "connected", "YellowGreen");  
+    displayMessage("#status", "connected", "YellowGreen");
     $("#p_title").css("visibility", "visible");
   }
   ws.onclose = function (event) {
-    displayMessage("#status", "disconnected", "Tomato");   
-    $("#p_reload").css("visibility", "visible");
-    $("#p_reload").on("tap", function(event) {
-      location.reload();
-    });
+    displayMessage("#status", "disconnected", "Tomato");
+    setTimeout(function() {
+       startWS();
+    },3000);
   }
   ws.onmessage = function (event) {
     //log(event.data);
@@ -40,10 +39,11 @@ function startWS() {
         updateView(data);
         break;
       default:
+        displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
     }
   }
   ws.onerror = function (event) {
-    displayMessage("#error_msg", event.data, "red");
+    displayMessage("#status", "disconnected", "Tomato");
   }
 }
 
@@ -76,32 +76,38 @@ function parsing(i, value) {
   var keys = Object.keys(value);
   for (k = 0; k < keys.length; k++) {
     var c = keys[k];
+    var p_id = document.getElementById(c+i);
     switch(c) {
       case "On":
       case "OutletInUse":
         setBtnColor(c, i, value[c]);
         break;
       case "CurrentTemperature":
+        $(p_id).attr("min", -20).attr("max", 60).attr("step", 0.1).val(value[c]).slider("refresh");      
+        break; 
+      case "Hue":
+        $(p_id).attr("min", 0).attr("max", 360).attr("step", 1).val(value[c]).slider("refresh");
+        break;   
+      case "Brightness":
+      case "Saturation":
+        $(p_id).attr("min", 0).attr("max", 100).attr("step", 1).val(value[c]).slider("refresh");
+        break;
       case "CurrentPosition":
       case "TargetPosition":
-      case "Brightness":
-      case "Hue":
-      case "Saturation":
-        var p_id = document.getElementById(c+i);
-        $(p_id).val(value[c]);
-        $(p_id).slider("refresh");
+        $(p_id).attr("min", 0).attr("max", 100).attr("step", 5).val(value[c]).slider("refresh");
+        break;
+      case "CurrentHorizontalTiltAngle":
+      case "TargetHorizontalTiltAngle":
+      $(p_id).attr("min", 0).attr("max", 90).attr("step", 5).val(value[c]).slider("refresh");
         break;
       case  "ContactSensorState":
-        var p_id = document.getElementById(c+i);
-        $(p_id).val(value[c]);
-        $(p_id).flipswitch("refresh");
+        $(p_id).val(value[c]).flipswitch("refresh");
         break;
       case  "PositionState":
-        var p_id = document.getElementById(c+i);
-        $(p_id).val(value[c]);
-        $(p_id).selectmenu("refresh");
+        $(p_id).val(value[c]).selectmenu("refresh");
         break;
       default:
+        displayMessage("#error_msg",'Characteristic "'+c+'" not impemented yet.',"orangered");
     }
   }
 }
@@ -139,38 +145,32 @@ function createView(data) {
       //log("c= >"+c+"<"+" "+ keys.length);
       switch(c) {
         case "On":
-          html = '<div data-role="controlgroup" data-type="horizontal">';
-          html += '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
-          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
-          html += be;
-          break;
         case "OutletInUse":
-          html = '<div data-role="controlgroup" data-type="horizontal">';
-          html += '<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
-          html += '<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
-          html += be;
+          html='<div data-role="controlgroup" data-type="horizontal">';
+          html+='<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
+          html+='<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
+          html+=be;
           break;
         case "CurrentTemperature":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="-20" max="60" step="0.1" value="20" data-highlight="true" data-popup-enabled="true">';
-          break;
-        case "ContactSensorState":
-          html = '<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
-          break;
-        case "PositionState":
-          html = '<fieldset class="ui-field-contain" style="width: 50%"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
-          html += '<option value="0">Decreasing</option><option value="1">Increasing</option><option value="2">Stopped</option>';
-          html += '</select></fieldset>';
-          break;
-        case "CurrentPosition":
-        case "TargetPosition":
+        case "Hue":
         case "Brightness":
         case "Saturation":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="0" max="100" value="0" data-highlight="true" data-popup-enabled="true">';
+        case "CurrentPosition":
+        case "TargetPosition":
+        case "CurrentHorizontalTiltAngle":
+        case "TargetHorizontalTiltAngle":
+          html='<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
-        case "Hue":
-          html = '<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" min="0" max="360" value="0" data-highlight="true" data-popup-enabled="true">';
+        case "ContactSensorState":
+          html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+          break;
+        case "PositionState":
+          html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
+          html+='<option value="0">Decreasing</option><option value="1">Increasing</option><option value="2">Stopped</option>';
+          html+='</select></fieldset>';
           break;
         default:
+          html='<span class="pi_warning">not implemented yet</span>';
       }
       if (k == 0) {blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].service+'</span>'+be);}
       else {blocka = $('<div class="ui-block-a pi-ntb">'+be);}
@@ -232,7 +232,6 @@ function createView(data) {
     <div data-role="footer">
       <h1 id="fc"></h1>
       <div id="error_msg" class="pi-la"></div>
-      <div id="message" class="pi-la"></div>
       <div id="debug" class="pi-la"></div>
     </div>
   </div>     

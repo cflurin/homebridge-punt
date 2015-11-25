@@ -87,12 +87,14 @@ Simulator.prototype.startServer = function() {
           this.Accessories[index].i_characteristic[t_characteristic].setValue(value);
           break;
         case "CurrentPosition":
-        case "TargetPosition":
-        case "ContactSensorState":
         case "PositionState":
         case "Brightness":
         case "Hue":
         case "Saturation":
+        case "TargetPosition":
+        case "ContactSensorState":
+        case "CurrentHorizontalTiltAngle":
+        case "TargetHorizontalTiltAngle":
           var value = parseInt(data.value);
           this.Accessories[index].i_value[t_characteristic] = value;
           this.Accessories[index].i_characteristic[t_characteristic].setValue(value);

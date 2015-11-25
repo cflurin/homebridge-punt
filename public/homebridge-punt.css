@@ -6,6 +6,9 @@ body {
   font-size: 0.813em;
   color: steelblue;
 }
+.pi_warning {
+  color: orangered;
+}
 .ui-header .ui-title {
     margin-right: 10%;
     margin-left: 10%;
@@ -26,7 +29,7 @@ body {
   padding: 0px !important;
   margin-left: 10px !important;
   margin-right: 10px !important;
-  margin-top: 5px !important;
+  margin-top: 3px !important;
   background-color: DimGray!important;
   border: none !important;
   box-shadow: none !important;
@@ -42,21 +45,21 @@ body {
 }
 .pi-grid .ui-block-a {
   border-color: lightgray !important;
-  width: 25% !important;
+  width: 22% !important;
   border-top: 1px solid gray;
   padding-top: 3px;
   /*font-weight: bold;*/
 }
 .pi-grid .ui-block-b {
   border-color: lightgray !important;
-  width: 25% !important;
+  width: 30% !important;
   border-top: 1px solid gray;
   padding-top: 3px;
 }
 .pi-grid .ui-block-c {
   border-color: lightgray !important;
   border-top: 1px solid gray;
-  min-width: 50%;
+  min-width: 48%;
 }
 
 #debug {
