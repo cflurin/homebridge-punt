@@ -10,8 +10,8 @@ body {
   color: orangered;
 }
 .ui-header .ui-title {
-    margin-right: 10%;
-    margin-left: 10%;
+  margin-right: 0%;
+  margin-left: 0%;
 }
 .pi-la {
   padding-left: 20px !important;
@@ -27,9 +27,7 @@ body {
   width: 32px;
   height: 28px;
   padding: 0px !important;
-  margin-left: 10px !important;
-  margin-right: 10px !important;
-  margin-top: 3px !important;
+  margin: 3px 10px 0px 10px !important;
   background-color: DimGray!important;
   border: none !important;
   box-shadow: none !important;

@@ -9,20 +9,23 @@
 <script>
 var ws;
 var logmsg = "";
-
 $(document).on("pagecreate", "#page1", function() {
   $(document).ready(startWS);
 });
-
 function startWS() {
   origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
   ws.onopen = function (event) {
     displayMessage("#status", "connected", "YellowGreen");
     $("#p_title").css("visibility", "visible");
+    $("#p_reload").css("visibility", "hidden");
   }
   ws.onclose = function (event) {
     displayMessage("#status", "disconnected", "Tomato");
+    $("#p_reload").css("visibility", "visible");
+    $("#p_reload").on("tap", function(event) {
+      location.reload();
+    });
     setTimeout(function() {
        startWS();
     },3000);
@@ -46,16 +49,13 @@ function startWS() {
     displayMessage("#status", "disconnected", "Tomato");
   }
 }
-
 function displayMessage(output, message, color) {
   $(output).html('<span style="color:'+color+'">'+message+'</span>');
 }
-
 function log(message) {
   logmsg += message + '<br>';
   $("#debug").html('<span>'+logmsg+'</span>');
 }
-
 function updateView(data) {
   //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
@@ -70,7 +70,6 @@ function updateView(data) {
     parsing(i,data.accessory.value);
   }
 }
-
 function parsing(i, value) {
   //log(JSON.stringify(value));
   var keys = Object.keys(value);
@@ -111,7 +110,6 @@ function parsing(i, value) {
     }
   }
 }
-
 function setBtnColor(c, i, value) {
   var btn_off = document.getElementById("off"+c+i);
   var btn_on = document.getElementById("on"+c+i);
@@ -123,7 +121,6 @@ function setBtnColor(c, i, value) {
     $(btn_on).removeClass("pi-btn-tap");
   }
 }
-
 function createView(data) {
   //log(JSON.stringify(data));
   var grid = $('<div class="ui-grid-b ui-responsive pi-grid" id="data_view">');
@@ -133,13 +130,11 @@ function createView(data) {
   var be = '</div>';
   var blocka, blockb, blockc;
   var html = "";
-  
   for (i = 0; i < data.accessories.length; i++) {
     //log(JSON.stringify(data.accessories[i]));    
     var value = data.accessories[i].value;
     var keys = Object.keys(value);
     //log("keys "+keys);
-    
     for (k = 0; k < keys.length; k++) {
       var c = keys[k];
       //log("c= >"+c+"<"+" "+ keys.length);
@@ -184,7 +179,6 @@ function createView(data) {
   grid.append(be);
   $("#content").append(grid);
   $("#content").trigger("create");
-
   $(".onoff").on("tap",  function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).text() == "off" ? false: true};
     var message = JSON.stringify(msg);
@@ -193,7 +187,6 @@ function createView(data) {
       ws.send(message);
     });  
   });
-    
   $(".slider").on("slidestop", function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
@@ -202,7 +195,6 @@ function createView(data) {
       ws.send(message);
     });
   });
-  
   $(".select").on("change", function(event) {
     var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
@@ -213,7 +205,6 @@ function createView(data) {
   });
 }
 </script>
-
 </head>
 <body>
   <div data-role="page" id="page1">

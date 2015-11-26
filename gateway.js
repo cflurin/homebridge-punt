@@ -89,7 +89,7 @@ Gateway.prototype.get_type = function() {
   var gateway_url = this.base_url + '/fhem?cmd=' + cmd + '&XHR=1';
   //this.log("get: gateway_url %s", gateway_url);
   
-  request.get({url: gateway_url}, function(err, response, body) {
+  this.request.get({url: gateway_url}, function(err, response, body) {
     
     if (!err && response.statusCode == 200) {
       var r_value = body.trim();
@@ -111,7 +111,7 @@ Gateway.prototype.get_eventMap = function() {
   var gateway_url = this.base_url + '/fhem?cmd=' + cmd + '&XHR=1';
   //this.log("get: gateway_url %s", gateway_url);
   
-  request.get({url: gateway_url}, function(err, response, body) {
+  this.request.get({url: gateway_url}, function(err, response, body) {
     
     if (!err && response.statusCode == 200) {
       var r_value = body.trim();
@@ -157,7 +157,7 @@ Gateway.prototype.get = function(t_characteristic, callback) {
     var gateway_url = this.base_url + '/fhem?cmd=' + cmd + '&XHR=1';
     //this.log("get: gateway_url %s", gateway_url);
     
-    request.get({url: gateway_url}, function(err, response, body) {
+    this.request.get({url: gateway_url}, function(err, response, body) {
       
       if (!err && response.statusCode == 200) {
         var r_value = body.trim();
@@ -203,7 +203,7 @@ Gateway.prototype.set = function(t_characteristic, value, callback) {
   }
     
   this.timeoutObj = setTimeout(function() { 
-    request({url: gateway_url}, function(err, response, body) {
+    this.request({url: gateway_url}, function(err, response, body) {
 
       if (!err && response.statusCode == 200) {
         //this.log("set: %s %s %s", this.name, t_characteristic, value);
