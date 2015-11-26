@@ -1,5 +1,5 @@
 # homebridge-punt
-Homebridge-punt is a Plugin for the homebridge server that emulates the iOS HomeKit API. The actual Version supports a Gateway for the Fhem-Server and a built-in Accessories-Simulator.
+Homebridge-punt is a Plugin for the homebridge server that emulates the iOS HomeKit API. Homebridge-punt incorporates a Gateway for the Fhem-Server and an Accessory-Simulator.
 
 **Note: this is a work in progress.**
 
