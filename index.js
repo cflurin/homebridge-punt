@@ -1,9 +1,9 @@
 'use strict';
 
-var Utils = require('./utils.js').Utils;
-var Accessory = require('./accessory.js').Accessory;
-var Monitor = require('./monitor.js').Monitor;
-var Simulator = require('./simulator.js').Simulator;
+var Utils = require('./lib/utils.js').Utils;
+var Accessory = require('./lib/accessory.js').Accessory;
+var Monitor = require('./lib/monitor.js').Monitor;
+var Simulator = require('./lib/simulator.js').Simulator;
 
 var Service, Characteristic;
 var storagePath;

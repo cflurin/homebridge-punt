@@ -12,7 +12,9 @@
     "homekit",
     "siri",
     "punt",
-    "fhem"
+    "fhem",
+    "simulator",
+    "gateway"
   ],
   "repository": {
     "type": "git",
