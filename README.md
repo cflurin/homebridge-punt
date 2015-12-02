@@ -1,5 +1,5 @@
 # homebridge-punt
-Homebridge-punt is Plugin for Homebridge. The Plugin incorporates a Fhem-Gateway and a Simulator.
+Homebridge-punt is a Plugin for Homebridge. The Plugin incorporates a Fhem-Gateway and a Simulator.
 
 **Note: this is a work in progress.**
 
