@@ -9,11 +9,12 @@
 <script>
 var ws;
 var logmsg = "";
+var line = 1;
 $(document).on("pagecreate", "#page1", function() {
   $(document).ready(startWS);
 });
 function startWS() {
-  origin = window.document.location.origin.replace(/http/, 'ws');
+  var origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
   ws.onopen = function (event) {
     displayMessage("#status", "connected", "YellowGreen");
@@ -27,18 +28,22 @@ function startWS() {
       location.reload();
     });
     setTimeout(function() {
-       startWS();
-    },3000);
+      //location.reload();
+      startWS();
+    },2000);
   }
   ws.onmessage = function (event) {
     //log(event.data);
     var data = JSON.parse(event.data);
     switch (data.label.data_type) {
       case "info":
-        $("#fc").html('homebridge-punt <span id="version"></span>');
+        $("#fc").html('homebridge-punt <span id="version"></span><span id="latest"></span>');
         displayMessage("#version", "v"+data.label.version, "SteelBlue");
+        if (data.label.version != data.label.latest) {
+          displayMessage("#latest", " [ new version "+data.label.latest+" available ]", "YellowGreen");
+        }
         break;
-      case "value":
+      case "accessory":
         updateView(data);
         break;
       default:
@@ -53,7 +58,7 @@ function displayMessage(output, message, color) {
   $(output).html('<span style="color:'+color+'">'+message+'</span>');
 }
 function log(message) {
-  logmsg += message + '<br>';
+  logmsg += line++ + " " + message + '<br>';
   $("#debug").html('<span>'+logmsg+'</span>');
 }
 function updateView(data) {
@@ -79,7 +84,7 @@ function parsing(i, value) {
     switch(c) {
       case "On":
       case "OutletInUse":
-        setBtnColor(c, i, value[c]);
+        setBtnColor(i, c, value[c]);
         break;
       case "CurrentTemperature":
         $(p_id).attr("min", -20).attr("max", 60).attr("step", 0.1).val(value[c]).slider("refresh");      
@@ -100,17 +105,17 @@ function parsing(i, value) {
       $(p_id).attr("min", 0).attr("max", 90).attr("step", 5).val(value[c]).slider("refresh");
         break;
       case  "ContactSensorState":
-        $(p_id).val(value[c]).flipswitch("refresh");
+        if ($(p_id).val() != value[c]) $(p_id).val(value[c]).flipswitch("refresh");
         break;
       case  "PositionState":
-        $(p_id).val(value[c]).selectmenu("refresh");
+        if ($(p_id).val() != value[c]) $(p_id).val(value[c]).selectmenu("refresh");
         break;
       default:
         displayMessage("#error_msg",'Characteristic "'+c+'" not impemented yet.',"orangered");
     }
   }
 }
-function setBtnColor(c, i, value) {
+function setBtnColor(i, c, value) {
   var btn_off = document.getElementById("off"+c+i);
   var btn_on = document.getElementById("on"+c+i);
   if (value) {
@@ -123,10 +128,10 @@ function setBtnColor(c, i, value) {
 }
 function createView(data) {
   //log(JSON.stringify(data));
-  var grid = $('<div class="ui-grid-b ui-responsive pi-grid" id="data_view">');
-  var ba = '<div class="ui-block-a">';
-  var bb = '<div class="ui-block-b">';
-  var bc = '<div class="ui-block-c">';
+  var grid = $('<div class="pi-grid-s ui-grid-b ui-responsive " id="data_view">');
+  var ba = '<div class="ui-block-a pi-border pi-padding">';
+  var bb = '<div class="ui-block-b pi-border pi-padding">';
+  var bc = '<div class="ui-block-c pi-border">';
   var be = '</div>';
   var blocka, blockb, blockc;
   var html = "";
@@ -168,7 +173,7 @@ function createView(data) {
           html='<span class="pi_warning">not implemented yet</span>';
       }
       if (k == 0) {blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].service+'</span>'+be);}
-      else {blocka = $('<div class="ui-block-a pi-ntb">'+be);}
+      else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
       grid.append(blocka);
       blockb = $(bb+c+be);
       grid.append(blockb);
@@ -180,7 +185,9 @@ function createView(data) {
   $("#content").append(grid);
   $("#content").trigger("create");
   $(".onoff").on("tap",  function(event) {
-    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).text() == "off" ? false: true};
+    var v = $(this).text() == "off" ? false: true;
+    setBtnColor($(this).data("i"), $(this).data("c"), v);
+    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: v};
     var message = JSON.stringify(msg);
     //log(message);
     setTimeout(function() {

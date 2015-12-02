@@ -11,6 +11,11 @@
     "run": true,
     "longpoll": true
   },
+    
+  "puntview": {
+    "run": true,
+    "port": "4040"
+  },
   
   "simulator": {
     "run": true,

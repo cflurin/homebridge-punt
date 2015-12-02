@@ -38,28 +38,37 @@ body {
 .pi-vh {
   visibility: hidden;
 }
-.pi-ntb {
+.pi-border {
+  border-color: lightgray !important;
+  border-top: 1px solid gray;
+}
+.pi-noborder {
   border-top: none !important;
 }
-.pi-grid .ui-block-a {
-  border-color: lightgray !important;
+.pi-padding {
+  padding-top: 3px;
+}
+.pi-grid-s .ui-block-a {
   width: 22% !important;
-  border-top: 1px solid gray;
-  padding-top: 3px;
-  /*font-weight: bold;*/
 }
-.pi-grid .ui-block-b {
-  border-color: lightgray !important;
+.pi-grid-s .ui-block-b {
   width: 30% !important;
-  border-top: 1px solid gray;
-  padding-top: 3px;
 }
-.pi-grid .ui-block-c {
-  border-color: lightgray !important;
-  border-top: 1px solid gray;
+.pi-grid-s .ui-block-c {
   min-width: 48%;
 }
-
+.pi-grid-p .ui-block-d {
+}
+.pi-grid-p .ui-block-a {
+}
+.pi-grid-p .ui-block-b {
+}
+.pi-grid-p .ui-block-c {
+  min-width: 34%;
+}
+.pi-grid-p .ui-block-d {
+  width: 16% !important;
+}
 #debug {
   color: steelblue;
 }

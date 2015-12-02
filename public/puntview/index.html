@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="homebridge-punt.css" />
+<script src="jquery-2.1.4.min.js"></script>
+<script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script>
+var ws;
+var logmsg = "";
+var line = 1;
+$(document).on("pagecreate", "#page1", function() {
+  $(document).ready(startWS);
+});
+function startWS() {
+  var origin = window.document.location.origin.replace(/http/, 'ws');
+  ws = new WebSocket(origin);
+  ws.onopen = function (event) {
+    displayMessage("#status", "connected", "YellowGreen");
+    $("#p_title").css("visibility", "visible");
+    $("#p_reload").css("visibility", "hidden");
+  }
+  ws.onclose = function (event) {
+    displayMessage("#status", "disconnected", "Tomato");
+    $("#p_reload").css("visibility", "visible");
+    $("#p_reload").on("tap", function(event) {
+      location.reload();
+    });
+    setTimeout(function() {
+      //location.reload();
+      startWS();
+    },2000);
+  }
+  ws.onmessage = function (event) {
+    //log(event.data);
+    var data = JSON.parse(event.data);
+    switch (data.label.data_type) {
+      case "info":
+        $("#fc").html('homebridge-punt <span id="version"></span><span id="latest"></span>');
+        displayMessage("#version", "v"+data.label.version, "SteelBlue");
+        if (data.label.version != data.label.latest) {
+          displayMessage("#latest", " [ new version "+data.label.latest+" available ]", "YellowGreen");
+        }
+        break;
+      case "accessory":
+        updateView(data);
+        break;
+      default:
+        displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
+    }
+  }
+  ws.onerror = function (event) {
+    displayMessage("#status", "disconnected", "Tomato");
+  }
+}
+function displayMessage(output, message, color) {
+  $(output).html('<span style="color:'+color+'">'+message+'</span>');
+}
+function log(message) {
+  logmsg += line++ + " " + message + '<br>';
+  $("#debug").html('<span>'+logmsg+'</span>');
+}
+function updateView(data) {
+  //log(JSON.stringify(data));
+  var data_view = document.getElementById('data_view');
+  if (!data_view) createView(data);
+  
+  if (data.label.index == "all") {
+    for (i = 0; i < data.accessories.length; i++) {
+      parsing(i,data.accessories[i].value);
+    }
+  } else {
+    var i = data.label.index;
+    parsing(i,data.accessory.value);
+  }
+}
+function parsing(i, value) {
+  //log(JSON.stringify(value));
+  var keys = Object.keys(value);
+  for (k = 0; k < keys.length; k++) {
+    var c = keys[k];
+    var p_id = document.getElementById(c+i);
+    $(p_id).text(value[c]);
+  }
+}
+function createView(data) {
+  //log(JSON.stringify(data));
+  var grid = $('<div class="pi-grid-p ui-grid-c ui-responsive" id="data_view">');
+  var ba = '<div class="ui-block-a pi-border pi-padding">';
+  var bb = '<div class="ui-block-b pi-border pi-padding">';
+  var bc = '<div class="ui-block-c pi-border pi-padding">';
+  var bd = '<div class="ui-block-d pi-border pi-padding">';
+  var be = '</div>';
+  var blocka, blockb, blockc, blockd;
+  var html = "";
+  for (i = 0; i < data.accessories.length; i++) {  
+    var value = data.accessories[i].value;
+    var keys = Object.keys(value);
+    for (k = 0; k < keys.length; k++) {
+      var c = keys[k];
+      if (k == 0) {
+        blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+be);
+        blockb = $(bb+data.accessories[i].service+be);
+      } else {
+        blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);
+        blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+be);
+      }
+      blockc = $(bc+c+be);
+      html ='<span id="'+c+i+'">'+value[c]+'</span>';
+      blockd = $(bd+html+be);
+      
+      grid.append(blocka);
+      grid.append(blockb);
+      grid.append(blockc);
+      grid.append(blockd);
+    }
+  }
+  grid.append(be);
+  $("#content").append(grid);
+  $("#content").trigger("create");
+}
+</script>
+</head>
+<body>
+  <div data-role="page" id="page1">
+    <div data-role="panel" id="panel1"> 
+      <h3>homebridge-punt</h3>
+      <p>This is a work in progress!<br>Please report bugs / issues on GitHub. Your feedback is welcome.</p>
+      <a href="https://github.com/cflurin/homebridge-punt" target="_blank">GitHub</a>
+    </div> 
+    <div data-role="header">
+      <a href="#panel1" class="pi-btn-h ui-btn ui-nodisc-icon ui-corner-all ui-icon-bars ui-btn-icon-left"></a>
+      <h1 id="p_title" class="pi-vh">puntView<span id="status" class="pi-lb"></span></h1>
+      <a href="#" id="p_reload" class="pi-btn-h pi-vh ui-btn ui-nodisc-icon ui-corner-all ui-icon-refresh ui-btn-icon-right"></a>
+    </div>
+    <div data-role="main" class="ui-content">
+      <div id="content"></div>
+    </div>
+    <div data-role="footer">
+      <h1 id="fc"></h1>
+      <div id="error_msg" class="pi-la"></div>
+      <div id="debug" class="pi-la"></div>
+    </div>
+  </div>     
+</body>
+</html>

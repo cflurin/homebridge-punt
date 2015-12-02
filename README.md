@@ -1,5 +1,5 @@
 # homebridge-punt
-Homebridge-punt is a Plugin for the homebridge server that emulates the iOS HomeKit API. Homebridge-punt incorporates a Gateway for the Fhem-Server and an Accessory-Simulator.
+Homebridge-punt is Plugin for Homebridge. The Plugin incorporates a Fhem-Gateway and a Simulator.
 
 **Note: this is a work in progress.**
 
@@ -10,14 +10,12 @@ You should have a look at the [Wiki](https://github.com/cflurin/homebridge-punt/
 
 Install homebridge:
 ```sh
-npm install -g homebridge
+sudo npm install -g homebridge
 ```
 Install homebridge-punt:
 ```sh
-npm install -g homebridge-punt
+sudo npm install -g homebridge-punt
 ```
-
-You may have to use `sudo` depending on your system.
 
 ### Configuration
 Add the punt-platform in config.json in your home directory inside `.homebridge`.
@@ -54,7 +52,12 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
     "run": true,
     "longpoll": true
   },
-    
+  
+  "puntview": {
+    "run": true,
+    "port": "4040"
+  },
+  
   "simulator": {
     "run": true,
     "port": "4080"
@@ -99,11 +102,23 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 }
 ```
 
+### puntView
+
+puntView is a WUI (web-based user interface) that displays the Accessory Services and Characteristics in real-time. 
+
+Type the puntView-address in your browser:
+
+```sh
+http://127.0.0.1:4040
+```
+
+Change the port number in config-punt.json if neccessary.
+
 ### Simulator
 
 Deactivate the gateway ("run": false) to run the simulator without connecting to the Fhem-Server. However, the simulator can run simultaneously with the gateway.
 
-Type the simulator-address in your browser:
+Type the Simulator-address in your browser:
 
 ```sh
 http://127.0.0.1:4080
@@ -111,12 +126,11 @@ http://127.0.0.1:4080
 
 ### Monitor
 
-The Monitor shows the homebridge-punt Version and the Accessory Values. Type the moitor address in your browser:
+The Monitor is still supported but `puntView` is recommended.
 
 ```sh
 http://127.0.0.1:8081
 ```
-Change the port number in config-punt.json if neccessary.
 
 ### Supported Services
 
@@ -126,5 +140,5 @@ The latest version (work in progress) supports:
 * Switch
 * ContactSensor
 * TemperatureSensor
-* WindowCovering (please see the comment in accessory.js)
-* Lightbulb (please see the comment in accessory.js)
+* WindowCovering (please see the comment in accessory.js for the fhem configuration)
+* Lightbulb (please see the comment in accessory.js for the fhem configuration)
