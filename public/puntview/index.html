@@ -78,7 +78,7 @@ function updateView(data) {
 function parsing(i, value) {
   //log(JSON.stringify(value));
   var keys = Object.keys(value);
-  for (k = 0; k < keys.length; k++) {
+  for (var k = 0; k < keys.length; k++) {
     var c = keys[k];
     var p_id = document.getElementById(c+i);
     $(p_id).text(value[c]);
@@ -97,7 +97,7 @@ function createView(data) {
   for (i = 0; i < data.accessories.length; i++) {  
     var value = data.accessories[i].value;
     var keys = Object.keys(value);
-    for (k = 0; k < keys.length; k++) {
+    for (var k = 0; k < keys.length; k++) {
       var c = keys[k];
       if (k == 0) {
         blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+be);

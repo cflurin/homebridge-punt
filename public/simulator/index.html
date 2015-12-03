@@ -78,7 +78,7 @@ function updateView(data) {
 function parsing(i, value) {
   //log(JSON.stringify(value));
   var keys = Object.keys(value);
-  for (k = 0; k < keys.length; k++) {
+  for (var k = 0; k < keys.length; k++) {
     var c = keys[k];
     var p_id = document.getElementById(c+i);
     switch(c) {
@@ -140,7 +140,7 @@ function createView(data) {
     var value = data.accessories[i].value;
     var keys = Object.keys(value);
     //log("keys "+keys);
-    for (k = 0; k < keys.length; k++) {
+    for (var k = 0; k < keys.length; k++) {
       var c = keys[k];
       //log("c= >"+c+"<"+" "+ keys.length);
       switch(c) {
