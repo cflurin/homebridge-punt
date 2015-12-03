@@ -13,6 +13,9 @@ body {
   margin-right: 0%;
   margin-left: 0%;
 }
+.ui-content {
+  background-color: white !important;
+}
 .pi-la {
   padding-left: 20px !important;
 }

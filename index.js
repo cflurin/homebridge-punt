@@ -27,9 +27,9 @@ function Platform(log, config) {
   this.p_config = Utils.loadConfig(storagePath, plugin_name, config_name);
   //this.log("p_config %s", JSON.stringify(this.p_config));
 
-  this.puntview = this.p_config.puntview || { "run": true };
-  this.simulator = this.p_config.simulator || { "run": true };
-  this.monitor = this.p_config.monitor || { "run": true };
+  this.puntview = this.p_config.puntview || { "run": false };
+  this.simulator = this.p_config.simulator || { "run": false };
+  this.monitor = this.p_config.monitor || { "run": false };
 
   var plugin_version = Utils.readPluginVersion();
   this.log("%s v%s", plugin_name, plugin_version);
