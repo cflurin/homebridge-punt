@@ -1,13 +1,14 @@
 'use strict';
 
+var inherits = require('util').inherits;
+
 var Utils = require('./lib/utils.js').Utils;
 var Accessory = require('./lib/accessory.js').Accessory;
 var PuntView = require('./lib/puntview.js').PuntView;
 var Simulator = require('./lib/simulator.js').Simulator;
 var Monitor = require('./lib/monitor.js').Monitor;
 
-var Service, Characteristic;
-var storagePath;
+var Service, Characteristic, storagePath;
 var name = "punt";
 var plugin_name = "homebridge-" + name;
 var config_name = "config-" + name + ".json";
@@ -56,8 +57,9 @@ function Platform(log, config) {
   }
 }
 
+
 Platform.prototype.accessories = function(callback) {
-    
+
   var accessories = this.p_config.accessories;
   for (var index = 0; index < accessories.length; index++) {
     var i_accessory = new Accessory(this.log, this.p_config, Service, Characteristic, index, this.PuntView, this.Simulator);
