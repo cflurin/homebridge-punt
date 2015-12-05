@@ -3,6 +3,7 @@
 var inherits = require('util').inherits;
 
 var Utils = require('./lib/utils.js').Utils;
+var PuntInit = require('./lib/init.js').PuntInit;
 var Accessory = require('./lib/accessory.js').Accessory;
 var PuntView = require('./lib/puntview.js').PuntView;
 var Simulator = require('./lib/simulator.js').Simulator;
@@ -42,21 +43,25 @@ function Platform(log, config) {
   }.bind(this));
   
   if (this.puntview.run) {
-    this.PuntView = new PuntView(this.log, this.p_config, this.Accessories, plugin_name);
-    this.PuntView.startServer();
+    this.PuntView = new PuntView(this.log, this.p_config, plugin_name);
+    this.PuntView.startServer(this.Accessories);
   }
 
   if (this.simulator.run) {
-    this.Simulator = new Simulator(this.log, this.p_config, this.Accessories, plugin_name);
-    this.Simulator.startServer();
+    this.Simulator = new Simulator(this.log, this.p_config, plugin_name);
+    this.Simulator.startServer(this.Accessories);
   }
     
   if (this.monitor.run) {
-    this.Monitor = new Monitor(this.log, this.p_config, this.Accessories, plugin_name);
-    this.Monitor.startServer();
+    this.Monitor = new Monitor(this.log, this.p_config, plugin_name);
+    this.Monitor.startServer(this.Accessories);
   }
+  
+  // todo without timer
+  setTimeout(function() {
+    PuntInit.initContext(this.log, this.p_config, this.Accessories);
+  }.bind(this),2000);
 }
-
 
 Platform.prototype.accessories = function(callback) {
 
