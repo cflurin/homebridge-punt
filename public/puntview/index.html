@@ -76,12 +76,15 @@ function updateView(data) {
   }
 }
 function parsing(i, accessory) {
-  //log(JSON.stringify(value));
+  //log(JSON.stringify(accessory.value));
   var keys = Object.keys(accessory.value);
+  var value = accessory.value;
   for (var k = 0; k < keys.length; k++) {
     var c = keys[k];
+    // todo 0/1 why?
+    var v = (value[c] == 0 || value[c] == false) ? false : true;
     var p_id = document.getElementById(c+i);
-    $(p_id).html('<span>'+accessory.value[c]+'</span>');
+    $(p_id).html('<span>'+v+'</span>');
     var p_idtt = document.getElementById("tt"+c+i);
     if (accessory.timestamp) {
       $(p_idtt).html('<span>from '+accessory.trigger+' at '+accessory.timestamp+'</span>');
