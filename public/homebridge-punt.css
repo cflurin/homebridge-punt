@@ -60,17 +60,21 @@ body {
 .pi-grid-s .ui-block-c {
   min-width: 48%;
 }
-.pi-grid-p .ui-block-d {
-}
+
 .pi-grid-p .ui-block-a {
+  width: 20%;
 }
 .pi-grid-p .ui-block-b {
+  width: 22%
 }
 .pi-grid-p .ui-block-c {
-  min-width: 34%;
+  width: 30%;
 }
 .pi-grid-p .ui-block-d {
-  width: 16% !important;
+  width: 7%;
+}
+.pi-grid-p .ui-block-e {
+  width: 21%;
 }
 #debug {
   color: steelblue;

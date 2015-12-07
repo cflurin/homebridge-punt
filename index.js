@@ -43,18 +43,18 @@ function Platform(log, config) {
   }.bind(this));
   
   if (this.puntview.run) {
-    this.PuntView = new PuntView(this.log, this.p_config, plugin_name);
-    this.PuntView.startServer(this.Accessories);
+    this.PuntView = new PuntView(this.log, this.p_config, plugin_name, this.Accessories);
+    this.PuntView.startServer();
   }
 
   if (this.simulator.run) {
-    this.Simulator = new Simulator(this.log, this.p_config, plugin_name);
-    this.Simulator.startServer(this.Accessories);
+    this.Simulator = new Simulator(this.log, this.p_config, plugin_name, this.Accessories);
+    this.Simulator.startServer();
   }
     
   if (this.monitor.run) {
-    this.Monitor = new Monitor(this.log, this.p_config, plugin_name);
-    this.Monitor.startServer(this.Accessories);
+    this.Monitor = new Monitor(this.log, this.p_config, plugin_name, this.Accessories);
+    this.Monitor.startServer();
   }
   
   // todo without timer

@@ -68,30 +68,35 @@ function updateView(data) {
   
   if (data.label.index == "all") {
     for (i = 0; i < data.accessories.length; i++) {
-      parsing(i,data.accessories[i].value);
+      parsing(i,data.accessories[i]);
     }
   } else {
     var i = data.label.index;
-    parsing(i,data.accessory.value);
+    parsing(i,data.accessory);
   }
 }
-function parsing(i, value) {
+function parsing(i, accessory) {
   //log(JSON.stringify(value));
-  var keys = Object.keys(value);
+  var keys = Object.keys(accessory.value);
   for (var k = 0; k < keys.length; k++) {
     var c = keys[k];
     var p_id = document.getElementById(c+i);
-    $(p_id).text(value[c]);
+    $(p_id).html('<span>'+accessory.value[c]+'</span>');
+    var p_idtt = document.getElementById("tt"+c+i);
+    if (accessory.timestamp) {
+      $(p_idtt).html('<span>from '+accessory.trigger+' at '+accessory.timestamp+'</span>');
+    }
   }
 }
 function createView(data) {
   //log(JSON.stringify(data));
-  var grid = $('<div class="pi-grid-p ui-grid-c ui-responsive" id="data_view">');
+  var grid = $('<div class="pi-grid-p ui-grid-d ui-responsive" id="data_view">');
   var ba = '<div class="ui-block-a pi-border pi-padding">';
   var bb = '<div class="ui-block-b pi-border pi-padding">';
   var bc = '<div class="ui-block-c pi-border pi-padding">';
   var bd = '<div class="ui-block-d pi-border pi-padding">';
-  var be = '</div>';
+  var be = '<div class="ui-block-e pi-border pi-padding">';
+  var bf = '</div>';
   var blocka, blockb, blockc, blockd;
   var html = "";
   for (i = 0; i < data.accessories.length; i++) {  
@@ -100,23 +105,26 @@ function createView(data) {
     for (var k = 0; k < keys.length; k++) {
       var c = keys[k];
       if (k == 0) {
-        blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+be);
-        blockb = $(bb+data.accessories[i].service+be);
+        blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+bf);
+        blockb = $(bb+data.accessories[i].service+bf);
       } else {
-        blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);
-        blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+be);
+        blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+bf);
+        blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+bf);
       }
-      blockc = $(bc+c+be);
+      blockc = $(bc+c+bf);
       html ='<span id="'+c+i+'">'+value[c]+'</span>';
-      blockd = $(bd+html+be);
+      blockd = $(bd+html+bf);
+      html ='<span class="pi-sf" id="tt'+c+i+'"></span>';
+      blocke = $(be+html+bf);
       
       grid.append(blocka);
       grid.append(blockb);
       grid.append(blockc);
       grid.append(blockd);
+      grid.append(blocke);
     }
   }
-  grid.append(be);
+  grid.append(bf);
   $("#content").append(grid);
   $("#content").trigger("create");
 }
