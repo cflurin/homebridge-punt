@@ -81,10 +81,8 @@ function parsing(i, accessory) {
   var value = accessory.value;
   for (var k = 0; k < keys.length; k++) {
     var c = keys[k];
-    // todo 0/1 why?
-    var v = (value[c] == 0 || value[c] == false) ? false : true;
     var p_id = document.getElementById(c+i);
-    $(p_id).html('<span>'+v+'</span>');
+    $(p_id).html('<span>'+value[c]+'</span>');
     var p_idtt = document.getElementById("tt"+c+i);
     if (accessory.timestamp) {
       $(p_idtt).html('<span>from '+accessory.trigger+' at '+accessory.timestamp+'</span>');
