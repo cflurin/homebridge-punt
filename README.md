@@ -117,6 +117,7 @@ Change the port number in config-punt.json if neccessary.
 ### Simulator
 
 ![Simulator](https://cloud.githubusercontent.com/assets/5056710/11633953/4398a55a-9d0e-11e5-9487-92371447514f.jpg)
+
 Deactivate the gateway ("run": false) to run the simulator without connecting to the Fhem-Server. However, the simulator can run simultaneously with the gateway.
 
 Type the Simulator-address in your browser:
