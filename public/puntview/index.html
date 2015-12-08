@@ -85,7 +85,7 @@ function parsing(i, accessory) {
     $(p_id).html('<span>'+value[c]+'</span>');
     var p_idtt = document.getElementById("tt"+c+i);
     if (accessory.timestamp) {
-      $(p_idtt).html('<span>from '+accessory.trigger+' at '+accessory.timestamp+'</span>');
+      $(p_idtt).html('<span>'+accessory.trigger+' at '+accessory.timestamp+'</span>');
     }
   }
 }
