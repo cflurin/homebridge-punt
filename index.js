@@ -10,6 +10,7 @@ var Simulator = require('./lib/simulator.js').Simulator;
 var Monitor = require('./lib/monitor.js').Monitor;
 
 var Service, Characteristic, storagePath;
+
 var name = "punt";
 var plugin_name = "homebridge-" + name;
 var config_name = "config-" + name + ".json";
@@ -60,7 +61,7 @@ function Platform(log, config) {
   // todo without timer
   setTimeout(function() {
     PuntInit.initContext(this.log, this.p_config, this.Accessories);
-  }.bind(this),500);
+  }.bind(this),1000);
 }
 
 Platform.prototype.accessories = function(callback) {
@@ -72,4 +73,5 @@ Platform.prototype.accessories = function(callback) {
   }
   //this.log("%s Accessories defined", this.Accessories.length);
   callback(this.Accessories);
+  
 }
