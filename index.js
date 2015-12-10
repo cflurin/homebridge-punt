@@ -73,5 +73,4 @@ Platform.prototype.accessories = function(callback) {
   }
   //this.log("%s Accessories defined", this.Accessories.length);
   callback(this.Accessories);
-  
 }
