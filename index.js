@@ -61,7 +61,7 @@ function Platform(log, config) {
   // todo without timer
   setTimeout(function() {
     PuntInit.initContext(this.log, this.p_config, this.Accessories);
-  }.bind(this),3000);
+  }.bind(this),5000);
 }
 
 Platform.prototype.accessories = function(callback) {
