@@ -62,9 +62,9 @@ function Platform(log, config) {
   }
  
   // todo: use server event 'ready', waiting for homebridge Update
-  //setTimeout(function() {
-    //PuntInit.Label(this.log, this.p_config, this.Accessories);
-  //}.bind(this),5000);
+  setTimeout(function() {
+    PuntInit.Label(this.log, this.p_config, this.Accessories);
+  }.bind(this),5000);
 }
 
 Platform.prototype.accessories = function(callback) {
