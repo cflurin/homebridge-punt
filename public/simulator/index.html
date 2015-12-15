@@ -84,6 +84,7 @@ function parsing(i, value) {
     switch(c) {
       case "On":
       case "OutletInUse":
+      case "HoldPosition":
         setBtnColor(i, c, value[c]);
         break;
       case "CurrentTemperature":
@@ -102,14 +103,20 @@ function parsing(i, value) {
         break;
       case "CurrentHorizontalTiltAngle":
       case "TargetHorizontalTiltAngle":
-      $(p_id).attr("min", 0).attr("max", 90).attr("step", 5).val(value[c]).slider("refresh");
+      case "CurrentVerticalTiltAngle":
+      case "TargetVerticalTiltAngle":
+        $(p_id).attr("min", 0).attr("max", 90).attr("step", 5).val(value[c]).slider("refresh");
         break;
-      case  "ContactSensorState":
+      case "ContactSensorState":
+      case "SmokeDetected":
+      case "StatusActive":
+      case "StatusFault":
+      case "StatusTampered":
+      case "StatusLowBattery":
+      case "ObstructionDetected":
         if ($(p_id).val() != value[c]) $(p_id).val(value[c]).flipswitch("refresh");
         break;
-      case  "SmokeDetected":
-        if ($(p_id).val() != value[c]) $(p_id).val(value[c]).flipswitch("refresh");
-        break;      
+        break;
       case  "PositionState":
         if ($(p_id).val() != value[c]) $(p_id).val(value[c]).selectmenu("refresh");
         break;
@@ -149,6 +156,7 @@ function createView(data) {
       switch(c) {
         case "On":
         case "OutletInUse":
+        case "HoldPosition":
           html='<div data-role="controlgroup" data-type="horizontal">';
           html+='<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
           html+='<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
@@ -162,11 +170,20 @@ function createView(data) {
         case "TargetPosition":
         case "CurrentHorizontalTiltAngle":
         case "TargetHorizontalTiltAngle":
+        case "CurrentVerticalTiltAngle":
+        case "TargetVerticalTiltAngle":
           html='<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
         case "ContactSensorState":
         case "SmokeDetected":
+        case "ObstructionDetected":
           html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+          break;
+        case "StatusActive":
+        case "StatusFault":
+        case "StatusTampered":
+        case "StatusLowBattery":
+            html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Status 0</option><option value="0">Status 1</option></select></div>';
           break;
         case "PositionState":
           html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
