@@ -107,6 +107,9 @@ function parsing(i, value) {
       case  "ContactSensorState":
         if ($(p_id).val() != value[c]) $(p_id).val(value[c]).flipswitch("refresh");
         break;
+      case  "SmokeDetected":
+        if ($(p_id).val() != value[c]) $(p_id).val(value[c]).flipswitch("refresh");
+        break;      
       case  "PositionState":
         if ($(p_id).val() != value[c]) $(p_id).val(value[c]).selectmenu("refresh");
         break;
@@ -162,6 +165,7 @@ function createView(data) {
           html='<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
         case "ContactSensorState":
+        case "SmokeDetected":
           html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
           break;
         case "PositionState":

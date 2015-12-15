@@ -144,3 +144,4 @@ The latest version (work in progress) supports:
 * TemperatureSensor
 * WindowCovering (please see the comment in accessory.js for the fhem configuration)
 * Lightbulb (please see the comment in accessory.js for the fhem configuration)
+* SmokeSensor
