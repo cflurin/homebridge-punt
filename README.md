@@ -87,7 +87,8 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
     },
     {
       "name": "local_weather",
-      "service": "TemperatureSensor"
+      "service": "TemperatureSensor",
+      "CurrentTemperature": { "minValue": -20, "maxValue": 60}
     },
     {
       "name": "led_bulb",
@@ -96,7 +97,10 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
     {
       "name": "bathroom_blind",
       "service": "WindowCovering",
-      "operationmode": "venetian"
+      "CurrentPosition": { "minStep": 5 },
+      "TargetPosition": { "minStep": 5 },
+      "CurrentHorizontalTiltAngle": { "minValue": 0, "minStep": 5 },
+      "TargetHorizontalTiltAngle": { "minValue": 0, "minStep": 5 }
     }
   ]
 }
@@ -145,3 +149,4 @@ The latest version (work in progress) supports:
 * WindowCovering (please see the comment in accessory.js for the fhem configuration)
 * Lightbulb (please see the comment in accessory.js for the fhem configuration)
 * SmokeSensor
+* MotionSensor

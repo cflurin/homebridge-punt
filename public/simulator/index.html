@@ -13,6 +13,13 @@ var line = 1;
 $(document).on("pagecreate", "#page1", function() {
   $(document).ready(startWS);
 });
+function displayMessage(output, message, color) {
+  $(output).html('<span style="color:'+color+'">'+message+'</span>');
+}
+function log(message) {
+  logmsg += line++ + " " + message + '<br>';
+  $("#debug").html('<span>'+logmsg+'</span>');
+}
 function startWS() {
   var origin = window.document.location.origin.replace(/http/, 'ws');
   ws = new WebSocket(origin);
@@ -54,13 +61,6 @@ function startWS() {
     displayMessage("#status", "disconnected", "Tomato");
   }
 }
-function displayMessage(output, message, color) {
-  $(output).html('<span style="color:'+color+'">'+message+'</span>');
-}
-function log(message) {
-  logmsg += line++ + " " + message + '<br>';
-  $("#debug").html('<span>'+logmsg+'</span>');
-}
 function updateView(data) {
   //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
@@ -99,13 +99,13 @@ function parsing(i, value) {
         break;
       case "CurrentPosition":
       case "TargetPosition":
-        $(p_id).attr("min", 0).attr("max", 100).attr("step", 5).val(value[c]).slider("refresh");
+        $(p_id).attr("min", 0).attr("max", 100).attr("step", 1).val(value[c]).slider("refresh");
         break;
       case "CurrentHorizontalTiltAngle":
       case "TargetHorizontalTiltAngle":
       case "CurrentVerticalTiltAngle":
       case "TargetVerticalTiltAngle":
-        $(p_id).attr("min", 0).attr("max", 90).attr("step", 5).val(value[c]).slider("refresh");
+        $(p_id).attr("min", 0).attr("max", 90).attr("step", 1).val(value[c]).slider("refresh");
         break;
       case "ContactSensorState":
       case "SmokeDetected":
@@ -114,6 +114,7 @@ function parsing(i, value) {
       case "StatusTampered":
       case "StatusLowBattery":
       case "ObstructionDetected":
+      case "MotionDetected":
         if ($(p_id).val() != value[c]) $(p_id).val(value[c]).flipswitch("refresh");
         break;
         break;
@@ -121,7 +122,7 @@ function parsing(i, value) {
         if ($(p_id).val() != value[c]) $(p_id).val(value[c]).selectmenu("refresh");
         break;
       default:
-        displayMessage("#error_msg",'Characteristic "'+c+'" not impemented yet.',"orangered");
+        //displayMessage("#error_msg",'Characteristic "'+c+'" undefined.',"lightgray");
     }
   }
 }
@@ -175,15 +176,18 @@ function createView(data) {
           html='<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
         case "ContactSensorState":
+          html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+          break;        
         case "SmokeDetected":
         case "ObstructionDetected":
-          html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Not Detected</option><option value="0">Detected</option></select></div>';
+        case "MotionDetected":
+          html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Not Detected</option><option value="1">Detected</option></select></div>';
           break;
         case "StatusActive":
         case "StatusFault":
         case "StatusTampered":
         case "StatusLowBattery":
-            html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="1">Status 0</option><option value="0">Status 1</option></select></div>';
+            html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Status 0</option><option value="1">Status 1</option></select></div>';
           break;
         case "PositionState":
           html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
@@ -191,7 +195,7 @@ function createView(data) {
           html+='</select></fieldset>';
           break;
         default:
-          html='<span class="pi_warning">not implemented yet</span>';
+          html='<span class="pi_warning">undefined</span>';
       }
       if (k == 0) {blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].service+'</span>'+be);}
       else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
