@@ -109,7 +109,7 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 The Characteristic default properties (minValue, maxValue and minStep can be set in config-punt.json:
 
 ```
-{ "minValue": 0, "maxValue": 100, "minsStep": 10 }
+{ "minValue": 0, "maxValue": 100, "minStep": 10 }
 ```
 
 [HomeKitTypes.js] (https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js) describes all the predifined Services and Characteristcs.
