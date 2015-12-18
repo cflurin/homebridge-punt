@@ -81,14 +81,14 @@ body {
 }
 #flipswitchWrapper .ui-flipswitch {
     width:170px;
-    height:30px;
+    height:27px;
 }
 #flipswitchWrapper .ui-flipswitch-active {
     padding-left:0px;
 }
 #flipswitchWrapper .ui-flipswitch .ui-flipswitch-on, #flipswitchWrapper .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {
     width:38px;
-    height:28px;
+    height:25px;
     text-indent: -6.2em;
 }
 #flipswitchWrapper .ui-flipswitch.ui-flipswitch-active .ui-flipswitch-on {

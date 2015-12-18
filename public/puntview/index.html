@@ -108,15 +108,16 @@ function createView(data) {
       if (k == 0) {
         blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+bf);
         blockb = $(bb+data.accessories[i].service+bf);
+        html ='<span class="pi-sf" id="tt'+c+i+'"></span>';
+        blocke = $(be+html+bf);
       } else {
         blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+bf);
         blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+bf);
+        blocke = $(be+bf);
       }
       blockc = $(bc+c+bf);
       html ='<span id="'+c+i+'">'+value[c]+'</span>';
       blockd = $(bd+html+bf);
-      html ='<span class="pi-sf" id="tt'+c+i+'"></span>';
-      blocke = $(be+html+bf);
       
       grid.append(blocka);
       grid.append(blockb);

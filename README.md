@@ -106,6 +106,15 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 }
 ```
 
+The Characteristic default properties (minValue, maxValue and minStep can be set in config-punt.json:
+
+```
+{ "minValue": 0, "maxValue": 100, "minsStep": 10 }
+```
+
+[HomeKitTypes.js] (https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js) describes all the predifined Services and Characteristcs.
+
+
 ### puntView
 
 puntView is a WUI (web-based user interface) that displays the Accessory Services and Characteristics in real-time. 
@@ -146,7 +155,8 @@ The latest version (work in progress) supports:
 * Switch
 * ContactSensor
 * TemperatureSensor
-* WindowCovering (please see the comment in accessory.js for the fhem configuration)
-* Lightbulb (please see the comment in accessory.js for the fhem configuration)
+* WindowCovering
+* Lightbulb
 * SmokeSensor
 * MotionSensor
+* LightSensor

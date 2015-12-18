@@ -87,6 +87,9 @@ function parsing(i, value) {
       case "HoldPosition":
         setBtnColor(i, c, value[c]);
         break;
+      case "CurrentAmbientLightLevel":
+        $(p_id).attr("min", 0).attr("max", 10000).attr("step", 1).val(value[c]).slider("refresh");  
+        break;
       case "CurrentTemperature":
         $(p_id).attr("min", -20).attr("max", 60).attr("step", 0.1).val(value[c]).slider("refresh");      
         break; 
@@ -173,6 +176,7 @@ function createView(data) {
         case "TargetHorizontalTiltAngle":
         case "CurrentVerticalTiltAngle":
         case "TargetVerticalTiltAngle":
+        case "CurrentAmbientLightLevel":
           html='<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
         case "ContactSensorState":
@@ -195,7 +199,7 @@ function createView(data) {
           html+='</select></fieldset>';
           break;
         default:
-          html='<span class="pi_warning">undefined</span>';
+          html='<span class="pi_warning">preliminary</span>';
       }
       if (k == 0) {blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].service+'</span>'+be);}
       else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
