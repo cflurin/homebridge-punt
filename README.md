@@ -90,9 +90,25 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
       "service": "TemperatureSensor",
       "CurrentTemperature": { "minValue": -20, "maxValue": 60}
     },
+      "name": "light_living",
+      "service": "LightSensor"
+    },
+    {
+      "name": "multi_living",
+      "service": "MotionSensor",
+      "StatusLowBattery": "default"
+    },
+    {
+      "name": "smoke_living",
+      "service": "SmokeSensor",
+      "StatusLowBattery": "default"
+    },
     {
       "name": "led_bulb",
-      "service": "Lightbulb"
+      "service": "Lightbulb",
+      "Brightness": "default",
+      "Hue": "default",
+      "Saturation": "default"
     },
     {
       "name": "bathroom_blind",
@@ -106,7 +122,8 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 }
 ```
 
-The Characteristic default properties (minValue, maxValue and minStep can be set in config-punt.json:
+To add an optional Characteristic define the Charachteristic with "default" for the default values.
+However, the the default values can be changed:
 
 ```
 { "minValue": 0, "maxValue": 100, "minStep": 10 }
@@ -151,12 +168,13 @@ http://127.0.0.1:8081
 
 The latest version (work in progress) supports:
 
-* Outlet
-* Switch
 * ContactSensor
+* Lightbulb
+* LightSensor
+* MotionSensor
+* Outlet
+* SmokeSensor
+* Switch
 * TemperatureSensor
 * WindowCovering
-* Lightbulb
-* SmokeSensor
-* MotionSensor
-* LightSensor
+

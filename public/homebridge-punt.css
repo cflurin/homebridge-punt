@@ -62,19 +62,16 @@ body {
 }
 
 .pi-grid-p .ui-block-a {
-  width: 19%;
+  width: 25%;
 }
 .pi-grid-p .ui-block-b {
-  width: 22%
+  width: 25%
 }
 .pi-grid-p .ui-block-c {
-  width: 33%;
+  width: 30%;
 }
 .pi-grid-p .ui-block-d {
-  width: 7%;
-}
-.pi-grid-p .ui-block-e {
-  width: 19%;
+  width: 20%;
 }
 #debug {
   color: steelblue;
