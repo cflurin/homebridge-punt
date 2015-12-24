@@ -91,7 +91,8 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
       "CurrentTemperature": { "minValue": -20, "maxValue": 60}
     },
       "name": "light_living",
-      "service": "LightSensor"
+      "service": "LightSensor",
+      "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1}
     },
     {
       "name": "multi_living",
@@ -100,7 +101,7 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
     },
     {
       "name": "smoke_living",
-      "service": "SmokeSensor",
+      "service": "SmokeSensor",    
       "StatusLowBattery": "default"
     },
     {
@@ -122,8 +123,8 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
 }
 ```
 
-To add an optional Characteristic define the Charachteristic with "default" for the default values.
-However, the the default values can be changed:
+To add an optional Characteristic define the Characteristic with "default" for the default values.
+However, the default values can be changed:
 
 ```
 { "minValue": 0, "maxValue": 100, "minStep": 10 }
