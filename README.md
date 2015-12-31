@@ -90,6 +90,7 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
       "service": "TemperatureSensor",
       "CurrentTemperature": { "minValue": -20, "maxValue": 60}
     },
+    {
       "name": "light_living",
       "service": "LightSensor",
       "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1}

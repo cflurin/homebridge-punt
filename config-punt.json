@@ -45,6 +45,7 @@
       "service": "TemperatureSensor",
       "CurrentTemperature": { "minValue": -20, "maxValue": 60}
     },
+    {
       "name": "light_living",
       "service": "LightSensor",
       "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1}
