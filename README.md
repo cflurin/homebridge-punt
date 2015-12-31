@@ -100,6 +100,10 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
       "StatusLowBattery": "default"
     },
     {
+      "name": "multi_living.battery",
+      "service": "BatteryService"
+    },
+    {
       "name": "smoke_living",
       "service": "SmokeSensor",    
       "StatusLowBattery": "default"
@@ -130,7 +134,7 @@ However, the default values can be changed:
 { "minValue": 0, "maxValue": 100, "minStep": 10 }
 ```
 
-[HomeKitTypes.js] (https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js) describes all the predifined Services and Characteristcs.
+[HomeKitTypes.js](https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js) describes all the predifined Services and Characteristcs.
 
 
 ### puntView
@@ -178,4 +182,5 @@ The latest version (work in progress) supports:
 * Switch
 * TemperatureSensor
 * WindowCovering
+* BatteryService
 

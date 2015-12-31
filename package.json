@@ -1,6 +1,6 @@
 {
   "name": "homebridge-punt",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "Fhem-Gateway and Accessory-Simulator Plugin for Homebridge",
   "license": "ISC",
   "author": {

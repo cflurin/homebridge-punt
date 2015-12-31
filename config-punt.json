@@ -37,17 +37,46 @@
       "service": "Outlet"
     },
     {
-      "name": "led_bulb",
-      "service": "Lightbulb"
+      "name": "garden_door",
+      "service": "ContactSensor"
     },
     {
-      "name": "temp_office",
-      "service": "TemperatureSensor"
+      "name": "local_weather",
+      "service": "TemperatureSensor",
+      "CurrentTemperature": { "minValue": -20, "maxValue": 60}
+    },
+      "name": "light_living",
+      "service": "LightSensor",
+      "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1}
+    },
+    {
+      "name": "multi_living",
+      "service": "MotionSensor",
+      "StatusLowBattery": "default"
+    },
+    {
+      "name": "multi_living.battery",
+      "service": "BatteryService"
+    },
+    {
+      "name": "smoke_living",
+      "service": "SmokeSensor",    
+      "StatusLowBattery": "default"
+    },
+    {
+      "name": "led_bulb",
+      "service": "Lightbulb",
+      "Brightness": "default",
+      "Hue": "default",
+      "Saturation": "default"
     },
     {
       "name": "bathroom_blind",
       "service": "WindowCovering",
-      "operationmode": "venetian"
+      "CurrentPosition": { "minStep": 5 },
+      "TargetPosition": { "minStep": 5 },
+      "CurrentHorizontalTiltAngle": { "minValue": 0, "minStep": 5 },
+      "TargetHorizontalTiltAngle": { "minValue": 0, "minStep": 5 }
     }
   ]
 }
