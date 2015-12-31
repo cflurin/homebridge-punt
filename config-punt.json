@@ -43,17 +43,20 @@
     {
       "name": "local_weather",
       "service": "TemperatureSensor",
-      "CurrentTemperature": { "minValue": -20, "maxValue": 60}
+      "CurrentTemperature": { "minValue": -20, "maxValue": 60 }
     },
     {
-      "name": "light_living",
+      "name": "multi_living.temperatur",
+      "service": "TemperatureSensor"
+    },
+    {
+      "name": "multi_living.light",
       "service": "LightSensor",
-      "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1}
+      "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1 }
     },
     {
-      "name": "multi_living",
-      "service": "MotionSensor",
-      "StatusLowBattery": "default"
+      "name": "multi_living.motion",
+      "service": "MotionSensor"
     },
     {
       "name": "multi_living.battery",

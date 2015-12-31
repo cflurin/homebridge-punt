@@ -74,10 +74,6 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
       "service": "Switch"
     },
     {
-      "name": "temp_control",
-      "service": "Switch"
-    },
-    {
       "name": "flex_lamp",
       "service": "Outlet"
     },
@@ -88,21 +84,7 @@ Add `config-punt.json` into your directory `.homebridge/plugins/homebridge-punt`
     {
       "name": "local_weather",
       "service": "TemperatureSensor",
-      "CurrentTemperature": { "minValue": -20, "maxValue": 60}
-    },
-    {
-      "name": "light_living",
-      "service": "LightSensor",
-      "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1}
-    },
-    {
-      "name": "multi_living",
-      "service": "MotionSensor",
-      "StatusLowBattery": "default"
-    },
-    {
-      "name": "multi_living.battery",
-      "service": "BatteryService"
+      "CurrentTemperature": { "minValue": -20, "maxValue": 60 }
     },
     {
       "name": "smoke_living",
@@ -137,6 +119,27 @@ However, the default values can be changed:
 
 [HomeKitTypes.js](https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js) describes all the predifined Services and Characteristcs.
 
+To define Multifunctions Sensors like Fibaro FGMS-001 with different services add a description to the accessory name separated by ".":
+
+```
+    {
+      "name": "multi_living.temperatur",
+      "service": "TemperatureSensor"
+    },
+    {
+      "name": "multi_living.light",
+      "service": "LightSensor",
+      "CurrentAmbientLightLevel": { "minValue": 0, "minStep": 1 }
+    },
+    {
+      "name": "multi_living.motion",
+      "service": "MotionSensor"
+    },
+    {
+      "name": "multi_living.battery",
+      "service": "BatteryService"
+    },
+```
 
 ### puntView
 
@@ -152,7 +155,7 @@ Change the port number in config-punt.json if neccessary.
 
 ### Simulator
 
-![Simulator](https://cloud.githubusercontent.com/assets/5056710/11633953/4398a55a-9d0e-11e5-9487-92371447514f.jpg)
+![Simulator](https://cloud.githubusercontent.com/assets/5056710/12063267/00550f8a-afac-11e5-9609-58e834ec277d.jpg)
 
 Deactivate the gateway ("run": false) to run the simulator without connecting to the Fhem-Server. However, the simulator can run simultaneously with the gateway.
 
