@@ -165,6 +165,8 @@ Type the Simulator-address in your browser:
 http://127.0.0.1:4080
 ```
 
+**Note: the Simulator supports (almost) all Services and Characteristics.**
+
 ### Monitor
 
 The Monitor is still supported but `puntView` is recommended.
