@@ -1,7 +1,8 @@
 # homebridge-punt
 Homebridge-punt is a Plugin for Homebridge. The Plugin incorporates a Fhem-Gateway and a Simulator.
 
-**Note: this is a work in progress.**
+**New: the Simulator supports (almost) all Services and Characteristics.**
+
 
 ### Installation
 
@@ -164,8 +165,6 @@ Type the Simulator-address in your browser:
 ```sh
 http://127.0.0.1:4080
 ```
-
-**Note: the Simulator supports (almost) all Services and Characteristics.**
 
 ### Monitor
 
