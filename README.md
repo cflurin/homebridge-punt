@@ -123,7 +123,7 @@ To define Multifunctions Sensors like Fibaro FGMS-001 with different services ad
 
 ```
     {
-      "name": "multi_living.temperatur",
+      "name": "multi_living.temp",
       "service": "TemperatureSensor"
     },
     {
@@ -173,18 +173,4 @@ The Monitor is still supported but `puntView` is recommended.
 http://127.0.0.1:8081
 ```
 
-### Supported Services
-
-The latest version (work in progress) supports:
-
-* ContactSensor
-* Lightbulb
-* LightSensor
-* MotionSensor
-* Outlet
-* SmokeSensor
-* Switch
-* TemperatureSensor
-* WindowCovering
-* BatteryService
 

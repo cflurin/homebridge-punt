@@ -70,9 +70,17 @@ function Platform(log, config) {
 Platform.prototype.accessories = function(callback) {
 
   var accessories = this.p_config.accessories;
+  var accessory_names = [];
   for (var index = 0; index < accessories.length; index++) {
-    var i_accessory = new Accessory(this.log, this.p_config, Service, Characteristic, index, this.PuntView, this.Simulator);
-    this.Accessories.push(i_accessory);
+    if (accessory_names.indexOf(accessories[index].name) < 0) {
+      var i_accessory = new Accessory(this.log, this.p_config, Service, Characteristic, index, this.PuntView, this.Simulator);
+      this.Accessories.push(i_accessory);
+      accessory_names.push(accessories[index].name);
+    }
+    else {
+      this.log.error("index.accessories '%s' is already defined, please change the accessory name.", accessories[index].name);
+      process.exit(1);
+    }
   }
   //this.log("%s Accessories defined", this.Accessories.length);
   callback(this.Accessories);

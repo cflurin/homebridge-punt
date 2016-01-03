@@ -46,7 +46,7 @@
       "CurrentTemperature": { "minValue": -20, "maxValue": 60 }
     },
     {
-      "name": "multi_living.temperatur",
+      "name": "multi_living.temp",
       "service": "TemperatureSensor"
     },
     {
