@@ -11,7 +11,7 @@ var Simulator = require('./lib/simulator.js').Simulator;
 var Monitor = require('./lib/monitor.js').Monitor;
 
 var Service, Characteristic, storagePath;
-var hap;
+//var hap;
 
 var name = "punt";
 var plugin_name = "homebridge-" + name;
@@ -19,10 +19,11 @@ var config_name = "config-" + name + ".json";
 var github_url = "https://raw.githubusercontent.com/cflurin/" + plugin_name + "/master/package.json";
 
 module.exports = function(homebridge) {
+  console.log("homebridge API version: " + homebridge.version);
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   storagePath = homebridge.user.storagePath();
-  hap = homebridge.hap;
+  //hap = homebridge.hap;
   
   homebridge.registerPlatform(plugin_name, name, Platform);
 }
@@ -82,6 +83,6 @@ Platform.prototype.accessories = function(callback) {
       process.exit(1);
     }
   }
-  //this.log("%s Accessories defined", this.Accessories.length);
+  this.log("%s Accessories defined", this.Accessories.length);
   callback(this.Accessories);
 }
