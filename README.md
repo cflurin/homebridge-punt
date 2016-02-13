@@ -120,7 +120,7 @@ However, the default values can be changed:
 
 [HomeKitTypes.js](https://github.com/KhaosT/HAP-NodeJS/blob/master/lib/gen/HomeKitTypes.js) describes all the predifined Services and Characteristcs.
 
-To define Multifunctions Sensors like Fibaro FGMS-001 with different services add a description to the accessory name separated by ".":
+To define Multifunctions Sensors like Fibaro FGMS-001 with different services add a suffix to the accessory name separated by ".":
 
 ```
     {
