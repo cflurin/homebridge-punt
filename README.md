@@ -123,7 +123,8 @@ However, the default values can be changed:
 To define Multifunctions Sensors like Fibaro FGMS-001 with different services add a suffix to the accessory name separated by ".":
 
 ```
-[
+{
+  "accessories": [
     {
       "name": "multi_living.temp",
       "service": "TemperatureSensor"
@@ -142,6 +143,7 @@ To define Multifunctions Sensors like Fibaro FGMS-001 with different services ad
       "service": "BatteryService"
     }
 ]
+}
 ```
 
 ### puntView
