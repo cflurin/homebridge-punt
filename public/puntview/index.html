@@ -65,25 +65,21 @@ function updateView(data) {
   //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
-  
-  if (data.label.index == "all") {
-    for (i = 0; i < data.accessories.length; i++) {
-      parsing(i,data.accessories[i]);
-    }
-  } else {
-    var i = data.label.index;
-    parsing(i,data.accessory);
+  var a_keys = Object.keys(data.accessories);
+  for (var i in a_keys) {
+    var n = a_keys[i];
+    parsing(n,data.accessories[n]);
   }
 }
-function parsing(i, accessory) {
+function parsing(n, accessory) {
   //log(JSON.stringify(accessory.value));
   var keys = Object.keys(accessory.value);
   var value = accessory.value;
-  for (var k = 0; k < keys.length; k++) {
+  for (var k in keys) {
     var c = keys[k];
-    var p_id = document.getElementById(c+i);
+    var p_id = document.getElementById(n+c);
     $(p_id).html('<span>'+value[c]+'</span>');
-    var p_idtt = document.getElementById("tt"+c+i);
+    var p_idtt = document.getElementById("tt"+n+c);
     if (accessory.timestamp) {
       $(p_idtt).html('<span>'+accessory.timestamp+' - '+accessory.trigger+'</span>');
     }
@@ -99,24 +95,25 @@ function createView(data) {
   var bf = '</div>';
   var blocka, blockb, blockc, blockd;
   var html = "";
-  for (i = 0; i < data.accessories.length; i++) {  
-    var value = data.accessories[i].value;
+  var a_keys = Object.keys(data.accessories);
+  for (var i in a_keys) {  
+    var n = a_keys[i];
+    var value = data.accessories[n].value;
     var keys = Object.keys(value);
-    for (var k = 0; k < keys.length; k++) {
+    for (var k in keys) {
       var c = keys[k];
       if (k == 0) {
-        blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+bf);
-        blockb = $(bb+data.accessories[i].service+bf);
-        html ='<span id="'+c+i+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+c+i+'"></span>';
+        blocka = $(ba+data.accessories[n].name+'<br><span class="pi-sf">'+data.accessories[n].type+'</span>'+bf);
+        blockb = $(bb+data.accessories[n].service+bf);
+        html ='<span id="'+n+c+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+n+c+'"></span>';
         blockd = $(bd+html+bf);
       } else {
         blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+bf);
         blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+bf);
-        html ='<span id="'+c+i+'">'+value[c]+'</span>';
+        html ='<span id="'+n+c+'">'+value[c]+'</span>';
         blockd = $(bd+html+bf);
       }
       blockc = $(bc+c+bf);
-      
       grid.append(blocka);
       grid.append(blockb);
       grid.append(blockc);

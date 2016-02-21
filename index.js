@@ -30,17 +30,32 @@ module.exports = function(homebridge) {
   
   storagePath = homebridge.user.storagePath();
   
-  // For platform plugin to be considered as dynamic platform plugin,
-  // registerPlatform(pluginName, platformName, constructor, dynamic), dynamic must be true
   homebridge.registerPlatform(plugin_name, platform_name, PuntPlatform, true);
 }
 
-// Platform constructor
-// config may be null
-// api may be null if launched from old homebridge version
 function PuntPlatform(log, config, api) {
   this.log = log;
-  this.Accessories = [];
+  this.accessories_config = {};
+  this.accessories = {};
+  
+  this.p_config = Utils.loadConfig(storagePath, plugin_name, config_name);
+  //this.log.debug("p_config %s", JSON.stringify(this.p_config));
+  
+  this.gateway = this.p_config.gateway || { "run": false };
+  this.puntview = this.p_config.puntview || { "run": false };
+  this.simulator = this.p_config.simulator || { "run": false };
+  this.monitor = this.p_config.monitor || { "run": false };
+  
+  this.readConfig();
+  
+  var plugin_version = Utils.readPluginVersion();
+  this.log("%s v%s", plugin_name, plugin_version);
+
+  Utils.read_npmVersion(plugin_name, function(npm_version) {
+    if (npm_version > plugin_version) {
+      this.log("A new version %s is avaiable", npm_version);
+    }
+  }.bind(this));
   
   this.requestServer = http.createServer(function(request, response) {
     if (request.url === "/add") {
@@ -65,9 +80,8 @@ function PuntPlatform(log, config, api) {
   this.requestServer.listen(18081, function() {
     this.log("Server Listening...");
   }.bind(this));
-
+  
   if (api) {
-    // Save the API object as plugin needs to register new accessory via this object.
     this.api = api;
 
     // Listen to event "didFinishLaunching", this means homebridge already finished loading cached accessories
@@ -75,67 +89,125 @@ function PuntPlatform(log, config, api) {
     // Or start discover new accessories
     this.api.on('didFinishLaunching', function() {
       this.log("Plugin - DidFinishLaunching");
+
+      this.addAccessories();
+      
+      setTimeout(function() {
+        PuntInit.Label(this.log, this.p_config, this.accessories);
+      }.bind(this),5000);
     }.bind(this));
   }
-  
-  this.p_config = Utils.loadConfig(storagePath, plugin_name, config_name);
-  //this.log("p_config %s", JSON.stringify(this.p_config));
 
-  this.puntview = this.p_config.puntview || { "run": false };
-  this.simulator = this.p_config.simulator || { "run": false };
-  this.monitor = this.p_config.monitor || { "run": false };
+  if (this.gateway.run) {
+    var base_url = "http://" + this.gateway.url + ":" + this.gateway.port;
+    this.log("Gateway is running, url %s", base_url);
+  } else {
+    this.log.error("Gateway is not running, Simulator mode.");
+  }
 
-  var plugin_version = Utils.readPluginVersion();
-  this.log("%s v%s", plugin_name, plugin_version);
-
-  Utils.read_npmVersion(plugin_name, function(npm_version) {
-    if (npm_version > plugin_version) {
-      this.log("A new version %s is avaiable", npm_version);
-    }
-  }.bind(this));
-  
   if (this.puntview.run) {
-    this.PuntView = new PuntView(this.log, this.p_config, plugin_name, this.Accessories);
+    this.PuntView = new PuntView(this.log, this.p_config, plugin_name, this.accessories);
     this.PuntView.startServer();
   }
 
   if (this.simulator.run) {
-    this.Simulator = new Simulator(this.log, this.p_config, plugin_name, this.Accessories);
+    this.Simulator = new Simulator(this.log, this.p_config, plugin_name, this.accessories, Characteristic);
     this.Simulator.startServer();
   }
     
   if (this.monitor.run) {
-    this.Monitor = new Monitor(this.log, this.p_config, plugin_name, this.Accessories);
+    this.Monitor = new Monitor(this.log, this.p_config, plugin_name, this.accessories);
     this.Monitor.startServer();
   }
+}
+
+PuntPlatform.prototype.readConfig = function() {
+  var p_accessories = this.p_config.accessories;
+  
+  for (var i in p_accessories) {
+    var name = p_accessories[i].name;
+    this.accessories_config[name] = p_accessories[i];
+  }
+  //this.log.debug("index.readConfig %s", JSON.stringify(this.accessories_config));
+}
+
+PuntPlatform.prototype.addAccessories = function() {
+  var p_accessories = this.p_config.accessories;
  
-  // todo: use server event 'ready', waiting for homebridge Update
-  setTimeout(function() {
-    PuntInit.Label(this.log, this.p_config, this.Accessories);
-  }.bind(this),5000);
+  for (var i in p_accessories) {
+    var accessoryName = p_accessories[i].name;
+    var a_keys = Object.keys(this.accessories);
+    
+    if (a_keys.indexOf(accessoryName) < 0) {
+      this.addAccessory(accessoryName);
+    }
+  }
+  this.log.debug("Number of Accessories: %s", Object.keys(this.accessories).length);
+  //this.log.debug("index.addAccessories %s", JSON.stringify(this.accessories));
+}
+
+// add accessory dynamically from outside event
+PuntPlatform.prototype.addAccessory = function(accessoryName) {
+  this.log.debug("Add Accessory");
+  var uuid;
+   
+  uuid = UUIDGen.generate(accessoryName);
+
+  var newAccessory = new Accessory(accessoryName, uuid);
+  this.log.debug("index.addAccessory UUID = %s", newAccessory.UUID);
+  
+  var i_accessory = new PuntAccessory(this.buildParams(accessoryName));
+  i_accessory.addService(newAccessory);
+  i_accessory.configureAccessory(newAccessory);
+  
+  this.accessories[accessoryName] = i_accessory;
+  this.api.registerPlatformAccessories(plugin_name, platform_name, [newAccessory]);
 }
 
 // Function invoked when homebridge tries to restore cached accessory
 // Developer can configure accessory at here (like setup event handler)
 // Update current value
 PuntPlatform.prototype.configureAccessory = function(accessory) {
-  this.log("Plugin - Configure Accessory: %s", accessory.displayName);
-
+  
+  var accessoryName = accessory.displayName;
+  this.log.debug("index.configureAccessory %s %s", accessoryName, accessory.UUID);
+    
   // set the accessory to reachable if plugin can currently process the accessory
   // otherwise set to false and update the reachability later by invoking 
   // accessory.updateReachability()
   accessory.reachable = true;
 
-  if (accessory.getService(Service.Lightbulb)) {
-    accessory.getService(Service.Lightbulb)
-    .getCharacteristic(Characteristic.On)
-    .on('set', function(value, callback) {
-      this.log("Light -> " + value);
-      callback();
-    }.bind(this));
-  }
+  var i_accessory = new PuntAccessory(this.buildParams(accessoryName));
+  i_accessory.configureAccessory(accessory);
+  
+  this.accessories[accessoryName] = i_accessory;
+}
 
-  this.Accessories.push(accessory);
+PuntPlatform.prototype.buildParams = function (accessoryName) {
+  var params = {
+    "log": this.log,
+    "p_config": this.p_config,
+    "accessory_config": this.accessories_config[accessoryName],
+    "Service": Service,
+    "Characteristic": Characteristic,
+    "PuntView": this.PuntView,
+    "Simulator": this.Simulator
+  }
+  //this.log.debug("index.configureAccessories %s", JSON.stringify(params.accessory_config));
+  return params;
+}
+
+// remove accessory dynamically from outside event
+PuntPlatform.prototype.removeAccessory = function() {
+  this.log("index.remove Accessory");
+  this.api.unregisterPlatformAccessories(plugin_name, platform_name, this.accessories);
+
+  this.accessories = {};
+}
+
+PuntPlatform.prototype.updateAccessoriesReachability = function() {
+  this.log("Update Reachability: todo ...");
+  // todo ...
 }
 
 //Handler will be invoked when user try to config your plugin
@@ -156,45 +228,10 @@ PuntPlatform.prototype.configurationRequestHandler = function(context, request, 
     callback(null, "platform", true, {"platform":"PuntPlatform", "TEST":"asafas"});
     return;
   }
-
-  // - UI Type: Input
-  // Can be used to request input from user
-  // User response can be retrieved from request.response.inputs next time
-  // when configurationRequestHandler being invoked
-
-  // var respDict = {
-  //   "type": "Interface",
-  //   "interface": "input",
-  //   "title": "Login",
-  //   "items": [
-  //     {
-  //       "id": "user",
-  //       "title": "Username",
-  //       "placeholder": "jappleseed"
-  //     }, 
-  //     {
-  //       "id": "pw",
-  //       "title": "Password",
-  //       "secure": true
-  //     }
-  //   ]
-  // }
-
-  // - UI Type: List
-  // Can be used to ask user to select something from the list
-  // User response can be retrieved from request.response.selections next time
-  // when configurationRequestHandler being invoked
-
-  // var respDict = {
-  //   "type": "Interface",
-  //   "interface": "list",
-  //   "title": "Select Something",
-  //   "allowMultipleSelection": true,
-  //   "items": [
-  //     "A","B","C"
-  //   ]
-  // }
-
+  
+  // ...
+  // ...
+  
   // - UI Type: Instruction
   // Can be used to ask user to do something (other than text input)
   // Hero image is base64 encoded image data. Not really sure the maximum length HomeKit allows.
@@ -206,9 +243,9 @@ PuntPlatform.prototype.configurationRequestHandler = function(context, request, 
     "detail": "Please press the button on the bridge to finish the setup.",
     "heroImage": "",
     "showActivityIndicator": true,
-    // "showNextButton": true,
-    // "buttonText": "Login in browser",
-    // "actionURL": "https://google.com"
+    "showNextButton": true,
+    "buttonText": "Login in browser",
+    "actionURL": "https://google.com"
   }
 
   // Plugin can set context to allow it track setup process
@@ -217,68 +254,3 @@ PuntPlatform.prototype.configurationRequestHandler = function(context, request, 
   //invoke callback to update setup UI
   callback(respDict);
 }
-
-// add accessory dynamically from outside event
-PuntPlatform.prototype.addAccessory = function(accessoryName) {
-  this.log("Add Accessory");
-  var uuid;
-
-  if (!accessoryName) {
-    accessoryName = "Test Accessory"
-  }
-
-  uuid = UUIDGen.generate(accessoryName);
-
-  var newAccessory = new Accessory(accessoryName, uuid);
-
-  // Plugin can save context on accessory
-  // To help restore accessory in configureAccessory()
-  // newAccessory.context.something = "Something"
-
-  newAccessory.addService(Service.Lightbulb, "Test Light")
-  .getCharacteristic(Characteristic.On)
-  .on('set', function(value, callback) {
-    this.log("Light -> " + value);
-    callback();
-  }.bind(this));
-
-  this.Accessories.push(newAccessory);
-  this.api.registerPlatformAccessories("homebridge-samplePlatform", "SamplePlatform", [newAccessory]);
-}
-
-PuntPlatform.prototype.updateAccessoriesReachability = function() {
-  this.log("Update Reachability");
-  for (var index in this.Accessories) {
-    var accessory = this.Accessories[index];
-    accessory.updateReachability(false);
-  }
-}
-
-// remove accessory dynamically from outside event
-PuntPlatform.prototype.removeAccessory = function() {
-  this.log("Remove Accessory");
-  this.api.unregisterPlatformAccessories(plugin_name, platform_name, this.Accessories);
-
-  this.Accessories = [];
-}
-
-PuntPlatform.prototype.accessories = function(callback) {
-
-  var p_accessories = this.p_config.accessories;
-  var p_accessory_names = [];
-  for (var index = 0; index < p_accessories.length; index++) {
-    if (p_accessory_names.indexOf(p_accessories[index].name) < 0) {
-      var i_accessory = new PuntAccessory(this.log, this.p_config, Service, Characteristic, index, this.PuntView, this.Simulator);
-      this.Accessories.push(i_accessory);
-      p_accessory_names.push(p_accessories[index].name);
-    }
-    else {
-      this.log.error("index.accessories '%s' is already defined, please change the accessory name.", p_accessories[index].name);
-      process.exit(1);
-    }
-  }
-  this.log("%s Accessories defined", this.Accessories.length);
-  callback(this.Accessories);
-}
-
-
