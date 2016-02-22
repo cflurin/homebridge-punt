@@ -65,17 +65,14 @@ function updateView(data) {
   //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
-  var a_keys = Object.keys(data.accessories);
-  for (var i in a_keys) {
-    var n = a_keys[i];
+  for (var k in data.accessories) {
+    var n = data.accessories[k].name;
     parsing(n,data.accessories[n]);
   }
 }
 function parsing(n, accessory) {
   //log(JSON.stringify(accessory));
-  var keys = Object.keys(accessory.value);
-  for (var k in keys) {
-    var c = keys[k];
+  for (var c in accessory.value) {
     var p_id = document.getElementById(n+c);
     var v = accessory.value[c];
     var min = accessory.props[c].minValue;
@@ -121,15 +118,11 @@ function createView(data) {
   var be = '</div>';
   var blocka, blockb, blockc;
   var html = "";
-  var a_keys = Object.keys(data.accessories);
-  for (var i in a_keys) {  
+  for (var k in data.accessories) {  
     //log(JSON.stringify(data.accessories[n]));
-    var n = a_keys[i];    
+    var n = data.accessories[n].name;    
     var value = data.accessories[n].value;
-    var keys = Object.keys(value);
-    //log("keys "+keys);
-    for (var k in keys) {
-      var c = keys[k];
+    for (var c in value) {
       //log("c= >"+c+"<"+" "+ keys.length);
       switch (data.accessories[n].props[c].control) {
         case "button":

@@ -124,9 +124,9 @@ function PuntPlatform(log, config, api) {
 PuntPlatform.prototype.readConfig = function() {
   var p_accessories = this.p_config.accessories;
   
-  for (var i in p_accessories) {
-    var name = p_accessories[i].name;
-    this.accessories_config[name] = p_accessories[i];
+  for (var k in p_accessories) {
+    var name = p_accessories[k].name;
+    this.accessories_config[name] = p_accessories[k];
   }
   //this.log.debug("index.readConfig %s", JSON.stringify(this.accessories_config));
 }
@@ -134,12 +134,12 @@ PuntPlatform.prototype.readConfig = function() {
 PuntPlatform.prototype.addAccessories = function() {
   var p_accessories = this.p_config.accessories;
  
-  for (var i in p_accessories) {
-    var accessoryName = p_accessories[i].name;
+  for (var k in p_accessories) {
+    var name = p_accessories[k].name;
     var a_keys = Object.keys(this.accessories);
     
-    if (a_keys.indexOf(accessoryName) < 0) {
-      this.addAccessory(accessoryName);
+    if (a_keys.indexOf(name) < 0) {
+      this.addAccessory(name);
     }
   }
   this.log.debug("Number of Accessories: %s", Object.keys(this.accessories).length);
@@ -147,20 +147,20 @@ PuntPlatform.prototype.addAccessories = function() {
 }
 
 // add accessory dynamically from outside event
-PuntPlatform.prototype.addAccessory = function(accessoryName) {
+PuntPlatform.prototype.addAccessory = function(name) {
   this.log.debug("Add Accessory");
   var uuid;
    
-  uuid = UUIDGen.generate(accessoryName);
+  uuid = UUIDGen.generate(name);
 
-  var newAccessory = new Accessory(accessoryName, uuid);
+  var newAccessory = new Accessory(name, uuid);
   this.log.debug("index.addAccessory UUID = %s", newAccessory.UUID);
   
-  var i_accessory = new PuntAccessory(this.buildParams(accessoryName));
+  var i_accessory = new PuntAccessory(this.buildParams(name));
   i_accessory.addService(newAccessory);
   i_accessory.configureAccessory(newAccessory);
   
-  this.accessories[accessoryName] = i_accessory;
+  this.accessories[name] = i_accessory;
   this.api.registerPlatformAccessories(plugin_name, platform_name, [newAccessory]);
 }
 
@@ -169,25 +169,25 @@ PuntPlatform.prototype.addAccessory = function(accessoryName) {
 // Update current value
 PuntPlatform.prototype.configureAccessory = function(accessory) {
   
-  var accessoryName = accessory.displayName;
-  this.log.debug("index.configureAccessory %s %s", accessoryName, accessory.UUID);
+  var name = accessory.displayName;
+  this.log.debug("index.configureAccessory %s %s", name, accessory.UUID);
     
   // set the accessory to reachable if plugin can currently process the accessory
   // otherwise set to false and update the reachability later by invoking 
   // accessory.updateReachability()
   accessory.reachable = true;
 
-  var i_accessory = new PuntAccessory(this.buildParams(accessoryName));
+  var i_accessory = new PuntAccessory(this.buildParams(name));
   i_accessory.configureAccessory(accessory);
   
-  this.accessories[accessoryName] = i_accessory;
+  this.accessories[name] = i_accessory;
 }
 
-PuntPlatform.prototype.buildParams = function (accessoryName) {
+PuntPlatform.prototype.buildParams = function (name) {
   var params = {
     "log": this.log,
     "p_config": this.p_config,
-    "accessory_config": this.accessories_config[accessoryName],
+    "accessory_config": this.accessories_config[name],
     "Service": Service,
     "Characteristic": Characteristic,
     "PuntView": this.PuntView,

@@ -142,7 +142,7 @@ To define Multifunctions Sensors like Fibaro FGMS-001 with different services ad
       "name": "multi_living.battery",
       "service": "BatteryService"
     }
-]
+  ]
 }
 ```
 
