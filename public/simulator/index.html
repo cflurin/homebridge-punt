@@ -66,12 +66,12 @@ function updateView(data) {
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
   for (var k in data.accessories) {
-    var n = data.accessories[k].name;
-    parsing(n,data.accessories[n]);
+    parsing(data.accessories[k]);
   }
 }
-function parsing(n, accessory) {
+function parsing(accessory) {
   //log(JSON.stringify(accessory));
+  var n = accessory.name;
   for (var c in accessory.value) {
     var p_id = document.getElementById(n+c);
     var v = accessory.value[c];
@@ -119,12 +119,13 @@ function createView(data) {
   var blocka, blockb, blockc;
   var html = "";
   for (var k in data.accessories) {  
-    //log(JSON.stringify(data.accessories[n]));
-    var n = data.accessories[n].name;    
-    var value = data.accessories[n].value;
+    //log(JSON.stringify(data.accessories[k]));
+    var n = data.accessories[k].name;   
+    var value = data.accessories[k].value;
+    var first = true;
     for (var c in value) {
       //log("c= >"+c+"<"+" "+ keys.length);
-      switch (data.accessories[n].props[c].control) {
+      switch (data.accessories[k].props[c].control) {
         case "button":
           html='<div data-role="controlgroup" data-type="horizontal">';
           html+='<a href="#" id="off'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
@@ -148,8 +149,10 @@ function createView(data) {
         default:
           html='<span class="pi_warning">undefined</span>';
       }
-      if (k == 0) {blocka = $(ba+data.accessories[n].name+'<br><span class="pi-sf">'+data.accessories[n].service_name+'</span>'+be);}
-      else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
+      if (first) {
+       blocka = $(ba+data.accessories[k].name+'<br><span class="pi-sf">'+data.accessories[k].service_name+'</span>'+be);
+       first = false;
+      } else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
       grid.append(blocka);
       blockb = $(bb+c+be);
       grid.append(blockb);

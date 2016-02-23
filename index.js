@@ -94,6 +94,7 @@ function PuntPlatform(log, config, api) {
       
       setTimeout(function() {
         PuntInit.Label(this.log, this.p_config, this.accessories);
+        //this.log.debug("PuntPlatform %s", JSON.stringify(this.accessories));
       }.bind(this),5000);
     }.bind(this));
   }
@@ -128,7 +129,7 @@ PuntPlatform.prototype.readConfig = function() {
     var name = p_accessories[k].name;
     this.accessories_config[name] = p_accessories[k];
   }
-  //this.log.debug("index.readConfig %s", JSON.stringify(this.accessories_config));
+  //this.log.debug("PuntPlatform.readConfig %s", JSON.stringify(this.accessories_config));
 }
 
 PuntPlatform.prototype.addAccessories = function() {
@@ -143,25 +144,30 @@ PuntPlatform.prototype.addAccessories = function() {
     }
   }
   this.log.debug("Number of Accessories: %s", Object.keys(this.accessories).length);
-  //this.log.debug("index.addAccessories %s", JSON.stringify(this.accessories));
+  //this.log.debug("PuntPlatform.addAccessories %s", JSON.stringify(this.accessories));
 }
 
 // add accessory dynamically from outside event
 PuntPlatform.prototype.addAccessory = function(name) {
-  this.log.debug("Add Accessory");
-  var uuid;
-   
-  uuid = UUIDGen.generate(name);
+  
+  if (!name) {
+    this.log.error("PuntPlatform.addAccessory undefined");
+  } else {
+    var uuid;
+     
+    uuid = UUIDGen.generate(name);
 
-  var newAccessory = new Accessory(name, uuid);
-  this.log.debug("index.addAccessory UUID = %s", newAccessory.UUID);
-  
-  var i_accessory = new PuntAccessory(this.buildParams(name));
-  i_accessory.addService(newAccessory);
-  i_accessory.configureAccessory(newAccessory);
-  
-  this.accessories[name] = i_accessory;
-  this.api.registerPlatformAccessories(plugin_name, platform_name, [newAccessory]);
+    var newAccessory = new Accessory(name, uuid);
+    this.log.debug("PuntPlatform.addAccessory UUID = %s", newAccessory.UUID);
+    
+    var i_accessory = new PuntAccessory(this.buildParams(name));
+    i_accessory.addService(newAccessory);
+    i_accessory.configureAccessory(newAccessory);
+    
+    this.accessories[name] = i_accessory;
+    this.api.registerPlatformAccessories(plugin_name, platform_name, [newAccessory]);
+    this.log.debug("PuntPlatform.addAccessory %s", name);
+  }
 }
 
 // Function invoked when homebridge tries to restore cached accessory
@@ -170,7 +176,7 @@ PuntPlatform.prototype.addAccessory = function(name) {
 PuntPlatform.prototype.configureAccessory = function(accessory) {
   
   var name = accessory.displayName;
-  this.log.debug("index.configureAccessory %s %s", name, accessory.UUID);
+  //this.log.debug("PuntPlatform.configureAccessory %s %s", name, accessory.UUID);
     
   // set the accessory to reachable if plugin can currently process the accessory
   // otherwise set to false and update the reachability later by invoking 
@@ -193,16 +199,20 @@ PuntPlatform.prototype.buildParams = function (name) {
     "PuntView": this.PuntView,
     "Simulator": this.Simulator
   }
-  //this.log.debug("index.configureAccessories %s", JSON.stringify(params.accessory_config));
+  //this.log.debug("PuntPlatform.configureAccessories %s", JSON.stringify(params.accessory_config));
   return params;
 }
 
 // remove accessory dynamically from outside event
-PuntPlatform.prototype.removeAccessory = function() {
-  this.log("index.remove Accessory");
-  this.api.unregisterPlatformAccessories(plugin_name, platform_name, this.accessories);
-
-  this.accessories = {};
+PuntPlatform.prototype.removeAccessory = function(name) {
+  
+  if (this.accessories[name]) {
+    delete this.accessories[name];
+    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
+    this.log("PuntPlatform.removeAccessory %", name);
+  } else {
+    this.log.error("PuntPlatform.removeAccessory not found");
+  }
 }
 
 PuntPlatform.prototype.updateAccessoriesReachability = function() {

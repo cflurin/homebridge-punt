@@ -66,12 +66,12 @@ function updateView(data) {
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
   for (var k in data.accessories) {
-    var n = data.accessories[k].name;
-    parsing(n,data.accessories[n]);
+    parsing(data.accessories[k]);
   }
 }
-function parsing(n, accessory) {
+function parsing(accessory) {
   //log(JSON.stringify(accessory.value));
+  var n = accessory.name;
   var value = accessory.value;
   for (var c in value) {
     var p_id = document.getElementById(n+c);
@@ -94,13 +94,15 @@ function createView(data) {
   var html = "";
   for (var k in data.accessories) {  
     var n = data.accessories[k].name;
-    var value = data.accessories[n].value;
+    var value = data.accessories[k].value;
+    var first = true;
     for (var c in value) {
-      if (k == 0) {
-        blocka = $(ba+data.accessories[n].name+'<br><span class="pi-sf">'+data.accessories[n].type+'</span>'+bf);
-        blockb = $(bb+data.accessories[n].service+bf);
+      if (first) {
+        blocka = $(ba+data.accessories[k].name+'<br><span class="pi-sf">'+data.accessories[k].type+'</span>'+bf);
+        blockb = $(bb+data.accessories[k].service+bf);
         html ='<span id="'+n+c+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+n+c+'"></span>';
         blockd = $(bd+html+bf);
+        first = false;
       } else {
         blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+bf);
         blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+bf);
