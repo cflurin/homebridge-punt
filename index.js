@@ -39,7 +39,7 @@ function PuntPlatform(log, config, api) {
   this.accessories = {};
   
   this.p_config = Utils.loadConfig(storagePath, plugin_name, config_name);
-  //this.log.debug("p_config %s", JSON.stringify(this.p_config));
+  //this.log.debug("PuntPlatform %s", JSON.stringify(this.p_config));
   
   this.gateway = this.p_config.gateway || { "run": false };
   this.puntview = this.p_config.puntview || { "run": false };
@@ -58,6 +58,9 @@ function PuntPlatform(log, config, api) {
   }.bind(this));
   
   this.requestServer = http.createServer(function(request, response) {
+    //this.log.debug("PuntPlattform %s", util.inspect(request, {depth: null}));
+    this.log.debug("PuntPlattform %s", request.url);
+    
     if (request.url === "/add") {
       this.addAccessory();
       response.writeHead(204);
@@ -84,9 +87,6 @@ function PuntPlatform(log, config, api) {
   if (api) {
     this.api = api;
 
-    // Listen to event "didFinishLaunching", this means homebridge already finished loading cached accessories
-    // Platform Plugin should only register new accessory that doesn't exist in homebridge after this event.
-    // Or start discover new accessories
     this.api.on('didFinishLaunching', function() {
       this.log("Plugin - DidFinishLaunching");
 
@@ -147,7 +147,6 @@ PuntPlatform.prototype.addAccessories = function() {
   //this.log.debug("PuntPlatform.addAccessories %s", JSON.stringify(this.accessories));
 }
 
-// add accessory dynamically from outside event
 PuntPlatform.prototype.addAccessory = function(name) {
   
   if (!name) {
@@ -158,35 +157,31 @@ PuntPlatform.prototype.addAccessory = function(name) {
     uuid = UUIDGen.generate(name);
 
     var newAccessory = new Accessory(name, uuid);
-    this.log.debug("PuntPlatform.addAccessory UUID = %s", newAccessory.UUID);
+    //this.log.debug("PuntPlatform.addAccessory UUID = %s", newAccessory.UUID);
     
     var i_accessory = new PuntAccessory(this.buildParams(name));
     i_accessory.addService(newAccessory);
     i_accessory.configureAccessory(newAccessory);
     
     this.accessories[name] = i_accessory;
+    this.accessories[name].hap_accessory = newAccessory;
     this.api.registerPlatformAccessories(plugin_name, platform_name, [newAccessory]);
-    this.log.debug("PuntPlatform.addAccessory %s", name);
+    //this.log.debug("PuntPlatform.addAccessory %s", name);
   }
 }
 
-// Function invoked when homebridge tries to restore cached accessory
-// Developer can configure accessory at here (like setup event handler)
-// Update current value
 PuntPlatform.prototype.configureAccessory = function(accessory) {
   
   var name = accessory.displayName;
   //this.log.debug("PuntPlatform.configureAccessory %s %s", name, accessory.UUID);
     
-  // set the accessory to reachable if plugin can currently process the accessory
-  // otherwise set to false and update the reachability later by invoking 
-  // accessory.updateReachability()
   accessory.reachable = true;
 
   var i_accessory = new PuntAccessory(this.buildParams(name));
   i_accessory.configureAccessory(accessory);
   
   this.accessories[name] = i_accessory;
+  this.accessories[name].hap_accessory = accessory;
 }
 
 PuntPlatform.prototype.buildParams = function (name) {
@@ -203,49 +198,38 @@ PuntPlatform.prototype.buildParams = function (name) {
   return params;
 }
 
-// remove accessory dynamically from outside event
-PuntPlatform.prototype.removeAccessory = function(name) {
+PuntPlatform.prototype.removeAccessory = function() {
+  
+  // test
+  var name = "flex_lamp";
   
   if (this.accessories[name]) {
+    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[name].hap_accessory]);
     delete this.accessories[name];
-    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
-    this.log("PuntPlatform.removeAccessory %", name);
+    this.log.debug("PuntPlatform.removeAccessory %s", name);
   } else {
     this.log.error("PuntPlatform.removeAccessory not found");
   }
 }
+
+//======= TODO =========
 
 PuntPlatform.prototype.updateAccessoriesReachability = function() {
   this.log("Update Reachability: todo ...");
   // todo ...
 }
 
-//Handler will be invoked when user try to config your plugin
-//Callback can be cached and invoke when nessary
 PuntPlatform.prototype.configurationRequestHandler = function(context, request, callback) {
-  this.log("Context: ", JSON.stringify(context));
-  this.log("Request: ", JSON.stringify(request));
+  this.log.debug("Context: ", JSON.stringify(context));
+  this.log.debug("Request: ", JSON.stringify(request));
 
-  // Check the request response
   if (request && request.response && request.response.inputs && request.response.inputs.name) {
     this.addAccessory(request.response.inputs.name);
 
-    // Invoke callback with config will let homebridge save the new config into config.json
-    // Callback = function(response, type, replace, config)
-    // set "type" to platform if the plugin is trying to modify platforms section
-    // set "replace" to true will let homebridge replace existing config in config.json
-    // "config" is the data platform trying to save
     callback(null, "platform", true, {"platform":"PuntPlatform", "TEST":"asafas"});
     return;
   }
   
-  // ...
-  // ...
-  
-  // - UI Type: Instruction
-  // Can be used to ask user to do something (other than text input)
-  // Hero image is base64 encoded image data. Not really sure the maximum length HomeKit allows.
-
   var respDict = {
     "type": "Interface",
     "interface": "instruction",
@@ -258,9 +242,7 @@ PuntPlatform.prototype.configurationRequestHandler = function(context, request, 
     "actionURL": "https://google.com"
   }
 
-  // Plugin can set context to allow it track setup process
   context.ts = "Hello";
 
-  //invoke callback to update setup UI
   callback(respDict);
 }
