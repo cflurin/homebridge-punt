@@ -46,6 +46,9 @@ function startWS() {
       case "accessory":
         updateView(data);
         break;
+      case "null":
+        $("#content").html('');
+        break;
       default:
         displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
     }
@@ -71,12 +74,12 @@ function updateView(data) {
 }
 function parsing(accessory) {
   //log(JSON.stringify(accessory.value));
-  var n = accessory.name;
+  var u = accessory.uuid;
   var value = accessory.value;
   for (var c in value) {
-    var p_id = document.getElementById(n+c);
+    var p_id = document.getElementById(u+c);
     $(p_id).html('<span>'+value[c]+'</span>');
-    var p_idtt = document.getElementById("tt"+n+c);
+    var p_idtt = document.getElementById("tt"+u+c);
     if (accessory.timestamp) {
       $(p_idtt).html('<span>'+accessory.timestamp+' - '+accessory.trigger+'</span>');
     }
@@ -93,20 +96,19 @@ function createView(data) {
   var blocka, blockb, blockc, blockd;
   var html = "";
   for (var k in data.accessories) {  
-    var n = data.accessories[k].name;
     var value = data.accessories[k].value;
     var first = true;
     for (var c in value) {
       if (first) {
         blocka = $(ba+data.accessories[k].name+'<br><span class="pi-sf">'+data.accessories[k].type+'</span>'+bf);
         blockb = $(bb+data.accessories[k].service+bf);
-        html ='<span id="'+n+c+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+n+c+'"></span>';
+        html ='<span id="'+k+c+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+k+c+'"></span>';
         blockd = $(bd+html+bf);
         first = false;
       } else {
         blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+bf);
         blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+bf);
-        html ='<span id="'+n+c+'">'+value[c]+'</span>';
+        html ='<span id="'+k+c+'">'+value[c]+'</span>';
         blockd = $(bd+html+bf);
       }
       blockc = $(bc+c+bf);

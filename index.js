@@ -26,7 +26,7 @@ module.exports = function(homebridge) {
   
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  UUIDGen = homebridge.hap.uuid;
+  UUIDGen = homebridge.hap.uuid; // Universally Unique IDentifier
   
   storagePath = homebridge.user.storagePath();
   
@@ -137,9 +137,11 @@ PuntPlatform.prototype.addAccessories = function() {
  
   for (var k in p_accessories) {
     var name = p_accessories[k].name;
+    var uuid = UUIDGen.generate(name);
+    
     var a_keys = Object.keys(this.accessories);
     
-    if (a_keys.indexOf(name) < 0) {
+    if (a_keys.indexOf(uuid) < 0) {
       this.addAccessory(name);
     }
   }
@@ -152,19 +154,17 @@ PuntPlatform.prototype.addAccessory = function(name) {
   if (!name) {
     this.log.error("PuntPlatform.addAccessory undefined");
   } else {
-    var uuid;
-     
-    uuid = UUIDGen.generate(name);
+    var uuid = UUIDGen.generate(name);
 
     var newAccessory = new Accessory(name, uuid);
     //this.log.debug("PuntPlatform.addAccessory UUID = %s", newAccessory.UUID);
     
-    var i_accessory = new PuntAccessory(this.buildParams(name));
+    var i_accessory = new PuntAccessory(this.buildParams(name, uuid));
     i_accessory.addService(newAccessory);
     i_accessory.configureAccessory(newAccessory);
     
-    this.accessories[name] = i_accessory;
-    this.accessories[name].hap_accessory = newAccessory;
+    this.accessories[uuid] = i_accessory;
+    this.accessories[uuid].hap_accessory = newAccessory;
     this.api.registerPlatformAccessories(plugin_name, platform_name, [newAccessory]);
     //this.log.debug("PuntPlatform.addAccessory %s", name);
   }
@@ -177,18 +177,19 @@ PuntPlatform.prototype.configureAccessory = function(accessory) {
     
   accessory.reachable = true;
 
-  var i_accessory = new PuntAccessory(this.buildParams(name));
+  var i_accessory = new PuntAccessory(this.buildParams(name, accessory.UUID));
   i_accessory.configureAccessory(accessory);
   
-  this.accessories[name] = i_accessory;
-  this.accessories[name].hap_accessory = accessory;
+  this.accessories[accessory.UUID] = i_accessory;
+  this.accessories[accessory.UUID].hap_accessory = accessory;
 }
 
-PuntPlatform.prototype.buildParams = function (name) {
+PuntPlatform.prototype.buildParams = function (name, uuid) {
   var params = {
     "log": this.log,
     "p_config": this.p_config,
     "accessory_config": this.accessories_config[name],
+    "uuid": uuid,
     "Service": Service,
     "Characteristic": Characteristic,
     "PuntView": this.PuntView,
@@ -200,13 +201,22 @@ PuntPlatform.prototype.buildParams = function (name) {
 
 PuntPlatform.prototype.removeAccessory = function() {
   
-  // test
-  var name = "flex_lamp";
+  // test remove first accessory
+  for (var first in this.accessories) break;
+  var name = this.accessories[first].name;
+  var uuid = this.accessories[first].uuid;
   
-  if (this.accessories[name]) {
-    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[name].hap_accessory]);
-    delete this.accessories[name];
+  if (this.accessories[uuid]) {
+    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[uuid].hap_accessory]);
+    delete this.accessories[uuid];
     this.log.debug("PuntPlatform.removeAccessory %s", name);
+        
+    if (this.puntview.run) {
+      this.PuntView.refresh("all");
+    } 
+    if (this.simulator.run) {
+      this.Simulator.refresh("all");
+    } 
   } else {
     this.log.error("PuntPlatform.removeAccessory not found");
   }

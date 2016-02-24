@@ -53,6 +53,9 @@ function startWS() {
       case "accessory":
         updateView(data);
         break;
+      case "null":
+        $("#content").html('');
+        break;
       default:
         displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
     }
@@ -71,16 +74,16 @@ function updateView(data) {
 }
 function parsing(accessory) {
   //log(JSON.stringify(accessory));
-  var n = accessory.name;
+  var u = accessory.uuid;
   for (var c in accessory.value) {
-    var p_id = document.getElementById(n+c);
+    var p_id = document.getElementById(u+c);
     var v = accessory.value[c];
     var min = accessory.props[c].minValue;
     var max = accessory.props[c].maxValue;
     var step = accessory.props[c].minStep;
     switch(accessory.props[c].control) {
       case "button":
-        setBtnColor(n, c, v);
+        setBtnColor(u, c, v);
         break;
       case "slider":
         //log(JSON.stringify(accessory.props[c]));
@@ -98,9 +101,9 @@ function parsing(accessory) {
     }
   }
 }
-function setBtnColor(n, c, value) {
-  var btn_off = document.getElementById("off"+n+c);
-  var btn_on = document.getElementById("on"+n+c);
+function setBtnColor(u, c, value) {
+  var btn_off = document.getElementById("off"+u+c);
+  var btn_on = document.getElementById("on"+u+c);
   if (value) {
     $(btn_on).addClass("pi-btn-tap");
     $(btn_off).removeClass("pi-btn-tap");
@@ -119,8 +122,7 @@ function createView(data) {
   var blocka, blockb, blockc;
   var html = "";
   for (var k in data.accessories) {  
-    //log(JSON.stringify(data.accessories[k]));
-    var n = data.accessories[k].name;   
+    //log(JSON.stringify(data.accessories[k])); 
     var value = data.accessories[k].value;
     var first = true;
     for (var c in value) {
@@ -128,21 +130,21 @@ function createView(data) {
       switch (data.accessories[k].props[c].control) {
         case "button":
           html='<div data-role="controlgroup" data-type="horizontal">';
-          html+='<a href="#" id="off'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
-          html+='<a href="#" id="on'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
+          html+='<a href="#" id="off'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
+          html+='<a href="#" id="on'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
           html+=be;
           break;
         case "slider":
-          html='<input id="'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
+          html='<input id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
         case "flipswitch":
-          html='<div id="flipswitchWrapper"><select id="'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Status 0</option><option value="1">Status 1</option></select></div>';
+          html='<div id="flipswitchWrapper"><select id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Status 0</option><option value="1">Status 1</option></select></div>';
           break;
         case "flipswitch_d":
-          html='<div id="flipswitchWrapper"><select id="'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Not Detected</option><option value="1">Detected</option></select></div>';
+          html='<div id="flipswitchWrapper"><select id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Not Detected</option><option value="1">Detected</option></select></div>';
           break;
         case "select":
-          html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+n+c+'" data-n="'+n+'" data-c="'+c+'" class="select">';
+          html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="select">';
           html+='<option value="0">Value 0</option><option value="1">Value 1</option><option value="2">Value 2</option><option value="3">Value 3</option><option value="4">Value 4</option>';
           html+='</select></fieldset>';
           break;
@@ -165,8 +167,8 @@ function createView(data) {
   $("#content").trigger("create");
   $(".onoff").on("tap",  function(event) {
     var v = $(this).text() == "off" ? false: true;
-    setBtnColor($(this).data("n"), $(this).data("c"), v);
-    var msg = {name: $(this).data("n"), characteristic: $(this).data("c"), value: v};
+    setBtnColor($(this).data("k"), $(this).data("c"), v);
+    var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: v};
     var message = JSON.stringify(msg);
     //log(message);
     setTimeout(function() {
@@ -174,7 +176,7 @@ function createView(data) {
     });  
   });
   $(".slider").on("slidestop", function(event) {
-    var msg = {name: $(this).data("n"), characteristic: $(this).data("c"), value: $(this).val()};
+    var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
     //log(message);
     setTimeout(function() {
@@ -182,7 +184,7 @@ function createView(data) {
     });
   });
   $(".select").on("change", function(event) {
-    var msg = {name: $(this).data("n"), characteristic: $(this).data("c"), value: $(this).val()};
+    var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
     //log("select: "+message);
     setTimeout(function() {
