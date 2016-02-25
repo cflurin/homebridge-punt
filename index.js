@@ -34,6 +34,7 @@ module.exports = function(homebridge) {
 }
 
 function PuntPlatform(log, config, api) {
+
   this.log = log;
   this.accessories_config = {};
   this.accessories = {};
@@ -123,6 +124,7 @@ function PuntPlatform(log, config, api) {
 }
 
 PuntPlatform.prototype.readConfig = function() {
+
   var p_accessories = this.p_config.accessories;
   
   for (var k in p_accessories) {
@@ -133,6 +135,7 @@ PuntPlatform.prototype.readConfig = function() {
 }
 
 PuntPlatform.prototype.addAccessories = function() {
+
   var p_accessories = this.p_config.accessories;
  
   for (var k in p_accessories) {
@@ -150,7 +153,7 @@ PuntPlatform.prototype.addAccessories = function() {
 }
 
 PuntPlatform.prototype.addAccessory = function(name) {
-  
+
   if (!name) {
     this.log.error("PuntPlatform.addAccessory undefined");
   } else {
@@ -171,20 +174,25 @@ PuntPlatform.prototype.addAccessory = function(name) {
 }
 
 PuntPlatform.prototype.configureAccessory = function(accessory) {
-  
+
   var name = accessory.displayName;
   //this.log.debug("PuntPlatform.configureAccessory %s %s", name, accessory.UUID);
-    
-  accessory.reachable = true;
-
-  var i_accessory = new PuntAccessory(this.buildParams(name, accessory.UUID));
-  i_accessory.configureAccessory(accessory);
   
-  this.accessories[accessory.UUID] = i_accessory;
-  this.accessories[accessory.UUID].hap_accessory = accessory;
+  if (this.accessories_config[name]) {
+    accessory.reachable = true;
+
+    var i_accessory = new PuntAccessory(this.buildParams(name, accessory.UUID));
+    i_accessory.configureAccessory(accessory);
+    
+    this.accessories[accessory.UUID] = i_accessory;
+    this.accessories[accessory.UUID].hap_accessory = accessory;
+  } else {
+    this.removeAccessory(accessory);
+  }
 }
 
 PuntPlatform.prototype.buildParams = function (name, uuid) {
+
   var params = {
     "log": this.log,
     "p_config": this.p_config,
@@ -199,37 +207,44 @@ PuntPlatform.prototype.buildParams = function (name, uuid) {
   return params;
 }
 
-PuntPlatform.prototype.removeAccessory = function() {
-  
-  // test remove first accessory
-  for (var first in this.accessories) break;
-  var name = this.accessories[first].name;
-  var uuid = this.accessories[first].uuid;
-  
-  if (this.accessories[uuid]) {
-    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[uuid].hap_accessory]);
-    delete this.accessories[uuid];
-    this.log.debug("PuntPlatform.removeAccessory %s", name);
-        
-    if (this.puntview.run) {
-      this.PuntView.refresh("all");
-    } 
-    if (this.simulator.run) {
-      this.Simulator.refresh("all");
-    } 
+PuntPlatform.prototype.removeAccessory = function(accessory) {
+
+  if (accessory) {
+    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
+    this.log.debug("PuntPlatform.removeAccessory %s", accessory.displayName);
   } else {
-    this.log.error("PuntPlatform.removeAccessory not found");
+    // Test: remove first accessory
+    for (var first in this.accessories) break;
+    var name = this.accessories[first].name;
+    var uuid = this.accessories[first].uuid;
+  
+    if (this.accessories[uuid]) {
+      this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[uuid].hap_accessory]);
+      delete this.accessories[uuid];
+      this.log.debug("PuntPlatform.removeAccessory %s", name);
+          
+      if (this.puntview.run) {
+        this.PuntView.refresh("all");
+      } 
+      if (this.simulator.run) {
+        this.Simulator.refresh("all");
+      } 
+    } else {
+      this.log.error("PuntPlatform.removeAccessory not found");
+    }
   }
 }
 
 //======= TODO =========
 
 PuntPlatform.prototype.updateAccessoriesReachability = function() {
+
   this.log("Update Reachability: todo ...");
   // todo ...
 }
 
 PuntPlatform.prototype.configurationRequestHandler = function(context, request, callback) {
+
   this.log.debug("Context: ", JSON.stringify(context));
   this.log.debug("Request: ", JSON.stringify(request));
 
