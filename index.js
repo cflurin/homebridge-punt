@@ -142,14 +142,11 @@ PuntPlatform.prototype.addAccessories = function() {
     var name = p_accessories[k].name;
     var uuid = UUIDGen.generate(name);
     
-    var a_keys = Object.keys(this.accessories);
-    
-    if (a_keys.indexOf(uuid) < 0) {
+    if (!this.accessories[uuid]) {
       this.addAccessory(name);
     }
   }
-  this.log.debug("Number of Accessories: %s", Object.keys(this.accessories).length);
-  //this.log.debug("PuntPlatform.addAccessories %s", JSON.stringify(this.accessories));
+  this.log("Number of Accessories: %s", Object.keys(this.accessories).length);
 }
 
 PuntPlatform.prototype.addAccessory = function(name) {
