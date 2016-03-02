@@ -57,34 +57,7 @@ function PuntPlatform(log, config, api) {
       this.log("A new version %s is avaiable", npm_version);
     }
   }.bind(this));
-  
-  this.requestServer = http.createServer(function(request, response) {
-    //this.log.debug("PuntPlattform %s", util.inspect(request, {depth: null}));
-    this.log.debug("PuntPlattform %s", request.url);
-    
-    if (request.url === "/add") {
-      this.addAccessory();
-      response.writeHead(204);
-      response.end();
-    }
-
-    if (request.url == "/reachability") {
-      this.updateAccessoriesReachability();
-      response.writeHead(204);
-      response.end();
-    }
-
-    if (request.url == "/remove") {
-      this.removeAccessory();
-      response.writeHead(204);
-      response.end();
-    }
-  }.bind(this));
-
-  this.requestServer.listen(18081, function() {
-    this.log("Server Listening...");
-  }.bind(this));
-  
+   
   if (api) {
     this.api = api;
 
@@ -210,61 +183,6 @@ PuntPlatform.prototype.removeAccessory = function(accessory) {
     this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
     this.log.debug("PuntPlatform.removeAccessory %s", accessory.displayName);
   } else {
-    // Test: remove first accessory
-    for (var first in this.accessories) break;
-    var name = this.accessories[first].name;
-    var uuid = this.accessories[first].uuid;
-  
-    if (this.accessories[uuid]) {
-      this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[uuid].hap_accessory]);
-      delete this.accessories[uuid];
-      this.log.debug("PuntPlatform.removeAccessory %s", name);
-          
-      if (this.puntview.run) {
-        this.PuntView.refresh("all");
-      } 
-      if (this.simulator.run) {
-        this.Simulator.refresh("all");
-      } 
-    } else {
-      this.log.error("PuntPlatform.removeAccessory not found");
-    }
+    this.log.error("PuntPlatform.removeAccessory not found");
   }
-}
-
-//======= TODO =========
-
-PuntPlatform.prototype.updateAccessoriesReachability = function() {
-
-  this.log("Update Reachability: todo ...");
-  // todo ...
-}
-
-PuntPlatform.prototype.configurationRequestHandler = function(context, request, callback) {
-
-  this.log.debug("Context: ", JSON.stringify(context));
-  this.log.debug("Request: ", JSON.stringify(request));
-
-  if (request && request.response && request.response.inputs && request.response.inputs.name) {
-    this.addAccessory(request.response.inputs.name);
-
-    callback(null, "platform", true, {"platform":"PuntPlatform", "TEST":"asafas"});
-    return;
-  }
-  
-  var respDict = {
-    "type": "Interface",
-    "interface": "instruction",
-    "title": "Almost There",
-    "detail": "Please press the button on the bridge to finish the setup.",
-    "heroImage": "",
-    "showActivityIndicator": true,
-    "showNextButton": true,
-    "buttonText": "Login in browser",
-    "actionURL": "https://google.com"
-  }
-
-  context.ts = "Hello";
-
-  callback(respDict);
 }
