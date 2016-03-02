@@ -46,6 +46,9 @@ function startWS() {
       case "accessory":
         updateView(data);
         break;
+      case "null":
+        $("#content").html('');
+        break;
       default:
         displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
     }
@@ -65,25 +68,18 @@ function updateView(data) {
   //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
-  
-  if (data.label.index == "all") {
-    for (i = 0; i < data.accessories.length; i++) {
-      parsing(i,data.accessories[i]);
-    }
-  } else {
-    var i = data.label.index;
-    parsing(i,data.accessory);
+  for (var k in data.accessories) {
+    parsing(data.accessories[k]);
   }
 }
-function parsing(i, accessory) {
+function parsing(accessory) {
   //log(JSON.stringify(accessory.value));
-  var keys = Object.keys(accessory.value);
+  var u = accessory.uuid;
   var value = accessory.value;
-  for (var k = 0; k < keys.length; k++) {
-    var c = keys[k];
-    var p_id = document.getElementById(c+i);
+  for (var c in value) {
+    var p_id = document.getElementById(u+c);
     $(p_id).html('<span>'+value[c]+'</span>');
-    var p_idtt = document.getElementById("tt"+c+i);
+    var p_idtt = document.getElementById("tt"+u+c);
     if (accessory.timestamp) {
       $(p_idtt).html('<span>'+accessory.timestamp+' - '+accessory.trigger+'</span>');
     }
@@ -99,24 +95,23 @@ function createView(data) {
   var bf = '</div>';
   var blocka, blockb, blockc, blockd;
   var html = "";
-  for (i = 0; i < data.accessories.length; i++) {  
-    var value = data.accessories[i].value;
-    var keys = Object.keys(value);
-    for (var k = 0; k < keys.length; k++) {
-      var c = keys[k];
-      if (k == 0) {
-        blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].type+'</span>'+bf);
-        blockb = $(bb+data.accessories[i].service+bf);
-        html ='<span id="'+c+i+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+c+i+'"></span>';
+  for (var k in data.accessories) {  
+    var value = data.accessories[k].value;
+    var first = true;
+    for (var c in value) {
+      if (first) {
+        blocka = $(ba+data.accessories[k].name+'<br><span class="pi-sf">'+data.accessories[k].type+'</span>'+bf);
+        blockb = $(bb+data.accessories[k].service+bf);
+        html ='<span id="'+k+c+'">'+value[c]+'</span><br><span class="pi-sf" id="tt'+k+c+'"></span>';
         blockd = $(bd+html+bf);
+        first = false;
       } else {
         blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+bf);
         blockb = $('<div class="ui-block-b pi-noborder pi-padding">'+bf);
-        html ='<span id="'+c+i+'">'+value[c]+'</span>';
+        html ='<span id="'+k+c+'">'+value[c]+'</span>';
         blockd = $(bd+html+bf);
       }
       blockc = $(bc+c+bf);
-      
       grid.append(blocka);
       grid.append(blockb);
       grid.append(blockc);

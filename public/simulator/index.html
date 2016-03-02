@@ -53,6 +53,9 @@ function startWS() {
       case "accessory":
         updateView(data);
         break;
+      case "null":
+        $("#content").html('');
+        break;
       default:
         displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
     }
@@ -65,29 +68,22 @@ function updateView(data) {
   //log(JSON.stringify(data));
   var data_view = document.getElementById('data_view');
   if (!data_view) createView(data);
-  
-  if (data.label.index == "all") {
-    for (i = 0; i < data.accessories.length; i++) {
-      parsing(i,data.accessories[i]);
-    }
-  } else {
-    var i = data.label.index;
-    parsing(i,data.accessory);
+  for (var k in data.accessories) {
+    parsing(data.accessories[k]);
   }
 }
-function parsing(i, accessory) {
+function parsing(accessory) {
   //log(JSON.stringify(accessory));
-  var keys = Object.keys(accessory.value);
-  for (var k = 0; k < keys.length; k++) {
-    var c = keys[k];
-    var p_id = document.getElementById(c+i);
+  var u = accessory.uuid;
+  for (var c in accessory.value) {
+    var p_id = document.getElementById(u+c);
     var v = accessory.value[c];
     var min = accessory.props[c].minValue;
     var max = accessory.props[c].maxValue;
     var step = accessory.props[c].minStep;
     switch(accessory.props[c].control) {
       case "button":
-        setBtnColor(i, c, v);
+        setBtnColor(u, c, v);
         break;
       case "slider":
         //log(JSON.stringify(accessory.props[c]));
@@ -105,9 +101,9 @@ function parsing(i, accessory) {
     }
   }
 }
-function setBtnColor(i, c, value) {
-  var btn_off = document.getElementById("off"+c+i);
-  var btn_on = document.getElementById("on"+c+i);
+function setBtnColor(u, c, value) {
+  var btn_off = document.getElementById("off"+u+c);
+  var btn_on = document.getElementById("on"+u+c);
   if (value) {
     $(btn_on).addClass("pi-btn-tap");
     $(btn_off).removeClass("pi-btn-tap");
@@ -125,40 +121,40 @@ function createView(data) {
   var be = '</div>';
   var blocka, blockb, blockc;
   var html = "";
-  for (i = 0; i < data.accessories.length; i++) {
-    //log(JSON.stringify(data.accessories[i]));    
-    var value = data.accessories[i].value;
-    var keys = Object.keys(value);
-    //log("keys "+keys);
-    for (var k = 0; k < keys.length; k++) {
-      var c = keys[k];
+  for (var k in data.accessories) {  
+    //log(JSON.stringify(data.accessories[k])); 
+    var value = data.accessories[k].value;
+    var first = true;
+    for (var c in value) {
       //log("c= >"+c+"<"+" "+ keys.length);
-      switch (data.accessories[i].props[c].control) {
+      switch (data.accessories[k].props[c].control) {
         case "button":
           html='<div data-role="controlgroup" data-type="horizontal">';
-          html+='<a href="#" id="off'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
-          html+='<a href="#" id="on'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
+          html+='<a href="#" id="off'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">off</a>';
+          html+='<a href="#" id="on'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="onoff pi-btn ui-btn ui-mini">on</a>';
           html+=be;
           break;
         case "slider":
-          html='<input id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
+          html='<input id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="slider" type="range" data-highlight="true" data-popup-enabled="true">';
           break;
         case "flipswitch":
-          html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Status 0</option><option value="1">Status 1</option></select></div>';
+          html='<div id="flipswitchWrapper"><select id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Status 0</option><option value="1">Status 1</option></select></div>';
           break;
         case "flipswitch_d":
-          html='<div id="flipswitchWrapper"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Not Detected</option><option value="1">Detected</option></select></div>';
+          html='<div id="flipswitchWrapper"><select id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="select" ui-flipswitch" data-role="flipswitch"><option value="0">Not Detected</option><option value="1">Detected</option></select></div>';
           break;
         case "select":
-          html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+c+i+'" data-i="'+i+'" data-c="'+c+'" class="select">';
+          html = '<fieldset class="ui-field-contain ui-mini" style="width: 50%; margin: 0px;"><select id="'+k+c+'" data-k="'+k+'" data-c="'+c+'" class="select">';
           html+='<option value="0">Value 0</option><option value="1">Value 1</option><option value="2">Value 2</option><option value="3">Value 3</option><option value="4">Value 4</option>';
           html+='</select></fieldset>';
           break;
         default:
           html='<span class="pi_warning">undefined</span>';
       }
-      if (k == 0) {blocka = $(ba+data.accessories[i].name+'<br><span class="pi-sf">'+data.accessories[i].service_name+'</span>'+be);}
-      else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
+      if (first) {
+       blocka = $(ba+data.accessories[k].name+'<br><span class="pi-sf">'+data.accessories[k].service_name+'</span>'+be);
+       first = false;
+      } else {blocka = $('<div class="ui-block-a pi-noborder pi-padding">'+be);}
       grid.append(blocka);
       blockb = $(bb+c+be);
       grid.append(blockb);
@@ -171,8 +167,8 @@ function createView(data) {
   $("#content").trigger("create");
   $(".onoff").on("tap",  function(event) {
     var v = $(this).text() == "off" ? false: true;
-    setBtnColor($(this).data("i"), $(this).data("c"), v);
-    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: v};
+    setBtnColor($(this).data("k"), $(this).data("c"), v);
+    var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: v};
     var message = JSON.stringify(msg);
     //log(message);
     setTimeout(function() {
@@ -180,7 +176,7 @@ function createView(data) {
     });  
   });
   $(".slider").on("slidestop", function(event) {
-    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
+    var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
     //log(message);
     setTimeout(function() {
@@ -188,7 +184,7 @@ function createView(data) {
     });
   });
   $(".select").on("change", function(event) {
-    var msg = {index: $(this).data("i"), characteristic: $(this).data("c"), value: $(this).val()};
+    var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: $(this).val()};
     var message = JSON.stringify(msg);
     //log("select: "+message);
     setTimeout(function() {
