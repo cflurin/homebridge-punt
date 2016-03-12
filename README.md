@@ -1,7 +1,7 @@
 # homebridge-punt
 Homebridge-punt is a Plugin for Homebridge. The Plugin incorporates a Fhem-Gateway and a Simulator.
 
-**New: JSON-editor - Runtime Configuration **
+**New: JSON-editor - Runtime Configuration**
 
 
 ### Installation
