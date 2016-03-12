@@ -4,12 +4,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css" />
 <link rel="stylesheet" href="homebridge-punt.css" />
+<link href="jsoneditor/dist/jsoneditor.css" rel="stylesheet" type="text/css">
 <script src="jquery-2.1.4.min.js"></script>
 <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script src="jsoneditor/dist/jsoneditor.js"></script>
 <script>
 var ws;
 var logmsg = "";
 var line = 1;
+var editor;
 $(document).on("pagecreate", "#page1", function() {
   $(document).ready(startWS);
 });
@@ -35,22 +38,28 @@ function startWS() {
   ws.onmessage = function (event) {
     //log(event.data);
     var data = JSON.parse(event.data);
-    switch (data.label.data_type) {
+    switch (data.type) {
       case "info":
         $("#fc").html('homebridge-punt <span id="version"></span><span id="latest"></span>');
-        displayMessage("#version", "v"+data.label.version, "SteelBlue");
-        if (data.label.version != data.label.latest) {
-          displayMessage("#latest", " [ new version "+data.label.latest+" available ]", "YellowGreen");
+        displayMessage("#version", "v"+data.spec.version, "SteelBlue");
+        if (data.spec.version != data.spec.latest) {
+          displayMessage("#latest", " [ new version "+data.spec.latest+" available ]", "YellowGreen");
         }
         break;
       case "accessory":
         updateView(data);
         break;
-      case "null":
-        $("#content").html('');
+      case "command":
+        if (data.cmd_type == "delete") {
+          $("#content").html('');
+        }
+        break;
+      case "document":
+        //log(JSON.stringify(data.config));
+        open_editor(data.content);
         break;
       default:
-        displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
+        displayMessage("#error_msg",'data_type error '+data.type,"orangered");
     }
   }
   ws.onerror = function (event) {
@@ -122,28 +131,80 @@ function createView(data) {
   $("#content").append(grid);
   $("#content").trigger("create");
 }
+$(function () {
+    $("[data-role=header],[data-role=footer]").toolbar().enhanceWithin();
+    $("div[data-role=panel]").panel().enhanceWithin();
+});
+$(document).on("tap", "#setting", function(event) {
+  var msg = {"type": "request", "config": "plugin"};
+  var message = JSON.stringify(msg);
+  setTimeout(function() {
+    ws.send(message);
+  });
+});
+$(document).on("tap", "#save", function(event) {
+  //log("save");
+  var json = editor.get();
+  var msg = {"type": "document", "content": json};
+  var message = JSON.stringify(msg);
+  setTimeout(function() {
+    ws.send(message);
+  });
+});
+$(document).on("tap", "#cancel", function(event) {
+  //log("cancel");
+});
+function open_editor(content) {
+  //log("open_editor");
+  var container = document.getElementById('jsoneditor');
+  var options = {
+    mode: 'tree',
+    modes: ['tree', 'code'],
+    onError: function (err) {
+      alert(err.toString());
+    },
+    onModeChange: function (newMode, oldMode) {
+      //log('Mode switched from '+oldMode+' to '+newMode);
+    }
+  };
+  if (!editor) editor = new JSONEditor(container, options);
+  editor.set(content);
+}
 </script>
 </head>
 <body>
+
+  <div data-role="header" data-position="fixed" data-theme="a">
+    <a href="#panel1" class="pi-btn-h ui-btn ui-nodisc-icon ui-corner-all ui-icon-bars ui-btn-icon-left"></a>
+    <h1 id="p_title" class="pi-vh">puntView<span id="status" class="pi-lb"></span></h1>
+    <a href="#" id="p_reload" class="pi-btn-h pi-vh ui-btn ui-nodisc-icon ui-corner-all ui-icon-refresh ui-btn-icon-right"></a>
+  </div>
+  
+  <div data-role="footer" data-position="fixed" data-theme="a">
+    <h1 id="fc"></h1>
+    <div id="error_msg" class="pi-la"></div>
+    <div id="debug" class="pi-la"></div>
+  </div>
+  
+  <div class="panel left" data-role="panel" data-position="left" data-display="push" id="panel1">
+    <ul>
+      <li><a href="#page1" id="overview" data-rel="close">Overview</a></li>
+      <li><a href="#page2" id="setting" data-rel="close">Setting</a></li>
+      <li><a href="https://github.com/cflurin/homebridge-punt" target="_blank">Report Bug</a></li>
+    </ul>
+  </div>
+
   <div data-role="page" id="page1">
-    <div data-role="panel" id="panel1"> 
-      <h3>homebridge-punt</h3>
-      <p>This is a work in progress!<br>Please report bugs / issues on GitHub. Your feedback is welcome.</p>
-      <a href="https://github.com/cflurin/homebridge-punt" target="_blank">GitHub</a>
-    </div> 
-    <div data-role="header">
-      <a href="#panel1" class="pi-btn-h ui-btn ui-nodisc-icon ui-corner-all ui-icon-bars ui-btn-icon-left"></a>
-      <h1 id="p_title" class="pi-vh">puntView<span id="status" class="pi-lb"></span></h1>
-      <a href="#" id="p_reload" class="pi-btn-h pi-vh ui-btn ui-nodisc-icon ui-corner-all ui-icon-refresh ui-btn-icon-right"></a>
-    </div>
     <div data-role="main" class="ui-content">
       <div id="content"></div>
     </div>
-    <div data-role="footer">
-      <h1 id="fc"></h1>
-      <div id="error_msg" class="pi-la"></div>
-      <div id="debug" class="pi-la"></div>
-    </div>
-  </div>     
+  </div>
+  
+  <div data-role="page" id="page2">
+    <div data-role="main" class="ui-content">
+      <a href="#" id="save" class="pi-btn-e ui-btn ui-btn-inline">Save</a>
+      <div id="jsoneditor"></div>
+  </div>
+  
 </body>
 </html>

@@ -35,6 +35,7 @@ body {
   border: none !important;
   box-shadow: none !important;
 }
+
 .pi-btn-tap {
   background-color: lightsteelblue !important; 
 }
@@ -93,3 +94,56 @@ body {
     margin-left:131px;
     text-indent: -6.2em;
 }
+
+.open a, .open a:hover {
+    padding: 7px 15px;
+    background-color: #000;
+    border-radius: 3px;
+}
+.open { 
+    color: #fff;
+    position: absolute;
+}
+.open.left {
+    left: 20px;
+    cursor: pointer;
+}
+.panel {
+    background: #7F8C8D !important;
+    color: #ECF0F1;
+}
+.panel a {
+    color: #FFF !important;
+    text-shadow: 0 0 0 rgba(0,0,0,0);
+    font-size: 14px;
+    padding: 15px 20px 15px 30px;
+    display: block;
+    text-decoration: none;
+    border-bottom: 1px solid #475657;
+    border-top: 1px solid #95A5A6;
+    position: relative;
+    font-weight: 400;
+}
+.panel ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    border-bottom: 1px solid #95A5A6;
+}
+.ui-panel-inner {
+    padding: 0;
+}
+.panel a:hover {
+    background-color: #95A5A6;
+}
+#jsoneditor {
+  width: 500px;
+  height: 600px;
+}
+.pi-btn-e {
+  width: 75px;
+  height: 22px;
+  padding: 3px !important;
+  margin: 0px 10px 10px 0px !important;
+}
+

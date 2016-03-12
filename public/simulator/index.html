@@ -42,22 +42,24 @@ function startWS() {
   ws.onmessage = function (event) {
     //log(event.data);
     var data = JSON.parse(event.data);
-    switch (data.label.data_type) {
+    switch (data.type) {
       case "info":
         $("#fc").html('homebridge-punt <span id="version"></span><span id="latest"></span>');
-        displayMessage("#version", "v"+data.label.version, "SteelBlue");
-        if (data.label.version != data.label.latest) {
-          displayMessage("#latest", " [ new version "+data.label.latest+" available ]", "YellowGreen");
+        displayMessage("#version", "v"+data.spec.version, "SteelBlue");
+        if (data.spec.version != data.spec.latest) {
+          displayMessage("#latest", " [ new version "+data.spec.latest+" available ]", "YellowGreen");
         }
         break;
       case "accessory":
         updateView(data);
         break;
-      case "null":
-        $("#content").html('');
+      case "command":
+        if (data.cmd_type == "delete") {
+          $("#content").html('');
+        }
         break;
       default:
-        displayMessage("#error_msg",'data_type error '+data.label.data_type,"orangered");
+        displayMessage("#error_msg",'data_type error '+data.type,"orangered");
     }
   }
   ws.onerror = function (event) {
@@ -165,7 +167,7 @@ function createView(data) {
   grid.append(be);
   $("#content").append(grid);
   $("#content").trigger("create");
-  $(".onoff").on("tap",  function(event) {
+  $(".onoff").on("tap", function(event) {
     var v = $(this).text() == "off" ? false: true;
     setBtnColor($(this).data("k"), $(this).data("c"), v);
     var msg = {uuid: $(this).data("k"), characteristic: $(this).data("c"), value: v};

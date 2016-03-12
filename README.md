@@ -1,7 +1,7 @@
 # homebridge-punt
 Homebridge-punt is a Plugin for Homebridge. The Plugin incorporates a Fhem-Gateway and a Simulator.
 
-**New Homebridge Plugin 2.0 API**
+**New: JSON-editor - Runtime Configuration **
 
 
 ### Installation
@@ -148,7 +148,8 @@ To define Multifunctions Sensors like Fibaro FGMS-001 with different services ad
 
 ### puntView
 
-puntView is a WUI (web-based user interface) that displays the Accessory Services and Characteristics in real-time. 
+puntView is a WUI (web-based user interface) that displays the Accessory Services and Characteristics in real-time.
+puntView incorporates an JSON-editor. Select `Setting` in Menu to open the JSON-editor. You can add/remove or even modify the accessory configuration (`config-punt.json`). Tap `Save`to save your changes, homebridge-punt will reload the new configuration without having to restart homebridge.
 
 Type the puntView-address in your browser:
 

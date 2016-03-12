@@ -18,6 +18,7 @@ var platform_name = "punt";
 var plugin_name = "homebridge-" + platform_name;
 var config_name = "config-" + platform_name + ".json";
 var github_url = "https://raw.githubusercontent.com/cflurin/" + plugin_name + "/master/package.json";
+var reload_name = "reload";
 
 module.exports = function(homebridge) {
   console.log("homebridge API version: " + homebridge.version);
@@ -67,9 +68,9 @@ function PuntPlatform(log, config, api) {
       this.addAccessories();
       
       setTimeout(function() {
-        PuntInit.Label(this.log, this.p_config, this.accessories);
+        PuntInit.Label(this.log, this.p_config, this.accessories, reload_name);
         //this.log.debug("PuntPlatform %s", JSON.stringify(this.accessories));
-      }.bind(this),5000);
+      }.bind(this),3000);
     }.bind(this));
   }
 
@@ -81,7 +82,17 @@ function PuntPlatform(log, config, api) {
   }
 
   if (this.puntview.run) {
-    this.PuntView = new PuntView(this.log, this.p_config, plugin_name, this.accessories);
+    var params = {
+      "log": this.log,
+      "p_config": this.p_config,
+      "storagePath": storagePath,
+      "plugin_name": plugin_name,
+      "config_name": config_name,
+      "accessories": this.accessories,
+      "reload": this.reload.bind(this)
+    }
+    //this.PuntView = new PuntView(this.log, this.p_config, storagePath, plugin_name, config_name, this.accessories);
+    this.PuntView = new PuntView(params);
     this.PuntView.startServer();
   }
 
@@ -128,7 +139,7 @@ PuntPlatform.prototype.addAccessory = function(name) {
     this.log.error("PuntPlatform.addAccessory undefined");
   } else {
     var uuid = UUIDGen.generate(name);
-
+    
     var newAccessory = new Accessory(name, uuid);
     //this.log.debug("PuntPlatform.addAccessory UUID = %s", newAccessory.UUID);
     
@@ -146,16 +157,22 @@ PuntPlatform.prototype.addAccessory = function(name) {
 PuntPlatform.prototype.configureAccessory = function(accessory) {
 
   var name = accessory.displayName;
-  //this.log.debug("PuntPlatform.configureAccessory %s %s", name, accessory.UUID);
+  var uuid = accessory.UUID;
+  //this.log.debug("PuntPlatform.configureAccessory %s %s", name, uuid);
+  
+  if (this.accessories[uuid]) {
+    this.log.error("PuntPlatform.configureAccessory %s UUID %s already used.", name, uuid);
+    process.exit(1);
+  }
   
   if (this.accessories_config[name]) {
     accessory.reachable = true;
 
-    var i_accessory = new PuntAccessory(this.buildParams(name, accessory.UUID));
+    var i_accessory = new PuntAccessory(this.buildParams(name, uuid));
     i_accessory.configureAccessory(accessory);
     
-    this.accessories[accessory.UUID] = i_accessory;
-    this.accessories[accessory.UUID].hap_accessory = accessory;
+    this.accessories[uuid] = i_accessory;
+    this.accessories[uuid].hap_accessory = accessory;
   } else {
     this.removeAccessory(accessory);
   }
@@ -171,7 +188,9 @@ PuntPlatform.prototype.buildParams = function (name, uuid) {
     "Service": Service,
     "Characteristic": Characteristic,
     "PuntView": this.PuntView,
-    "Simulator": this.Simulator
+    "Simulator": this.Simulator,
+    "reload": this.reload.bind(this),
+    "reload_name": reload_name
   }
   //this.log.debug("PuntPlatform.configureAccessories %s", JSON.stringify(params.accessory_config));
   return params;
@@ -179,10 +198,39 @@ PuntPlatform.prototype.buildParams = function (name, uuid) {
 
 PuntPlatform.prototype.removeAccessory = function(accessory) {
 
-  if (accessory) {
+  var uuid = accessory.UUID;
+  
+  if (this.accessories[uuid]) {
     this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
+    delete this.accessories[uuid];
     this.log.debug("PuntPlatform.removeAccessory %s", accessory.displayName);
   } else {
     this.log.error("PuntPlatform.removeAccessory not found");
   }
+}
+
+PuntPlatform.prototype.reload = function() {
+ 
+  this.log("PuntPlatform.reload ...");
+  for (var k in this.accessories) {
+    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [this.accessories[k].hap_accessory]);
+    delete this.accessories[k];
+  }
+  
+  this.p_config = Utils.loadConfig(storagePath, plugin_name, config_name);
+  this.readConfig();
+  this.addAccessories();
+  
+  setTimeout(function() {
+    PuntInit.Label(this.log, this.p_config, this.accessories, reload_name);
+  }.bind(this),3000);
+  
+  setTimeout(function() {
+    if (this.puntview.run) {
+      this.PuntView.refresh("all");
+    }
+    if (this.simulator.run) {
+      this.Simulator.refresh("all");
+    }
+  }.bind(this),5000);
 }
