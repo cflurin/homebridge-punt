@@ -149,7 +149,7 @@ To define Multifunctions Sensors like Fibaro FGMS-001 with different services ad
 ### puntView
 
 puntView is a WUI (web-based user interface) that displays the Accessory Services and Characteristics in real-time.
-puntView incorporates an JSON-editor. Select `Setting` in Menu to open the JSON-editor. You can add/remove or even modify the accessory configuration (`config-punt.json`). Tap `Save`to save your changes, homebridge-punt will reload the new configuration without having to restart homebridge.
+puntView incorporates a JSON-editor, to open the editor select `Setting` in Menu. You can add, remove or modify accessories without having to restart homebridge. Tap `Save`to save your changes, homebridge-punt will reload the new configuration.
 
 Type the puntView-address in your browser:
 
