@@ -48,6 +48,7 @@ function startWS() {
         break;
       case "accessory":
         updateView(data);
+        displayMessage("#r_status", "reloaded", "YellowGreen");
         break;
       case "command":
         if (data.cmd_type == "delete") {
@@ -136,6 +137,7 @@ $(function () {
     $("div[data-role=panel]").panel().enhanceWithin();
 });
 $(document).on("tap", "#setting", function(event) {
+  displayMessage("#r_status", "", "Tomato");
   var msg = {"type": "request", "config": "plugin"};
   var message = JSON.stringify(msg);
   setTimeout(function() {
@@ -202,7 +204,7 @@ function open_editor(content) {
   
   <div data-role="page" id="page2">
     <div data-role="main" class="ui-content">
-      <a href="#" id="save" class="pi-btn-e ui-btn ui-btn-inline">Save</a>
+      <a href="#" id="save" class="pi-btn-e ui-btn ui-btn-inline">Save</a><span id="r_status" class="pi-lb"></span>
       <div id="jsoneditor"></div>
   </div>
   
