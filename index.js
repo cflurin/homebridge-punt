@@ -91,6 +91,7 @@ function PuntPlatform(log, config, api) {
 
     this.api.on('didFinishLaunching', function() {
       this.log("Plugin - DidFinishLaunching");
+      this.log.debug("Number of chaced Accessories: %s", this.hap_accessories.length);
       this.addAccessories();
 
       PuntInit.setValues(this.log, p_config, this.accessories, reload_name, function() {
@@ -136,7 +137,6 @@ PuntPlatform.prototype.addAccessories = function() {
       this.addAccessory(name);
     }
   }
-  this.log.debug("Number of chaced Accessories: %s", this.hap_accessories.length);
   this.log("Number of Accessories: %s", Object.keys(this.accessories).length);
 }
 
@@ -167,8 +167,6 @@ PuntPlatform.prototype.configureAccessory = function(accessory) {
   var uuid = accessory.UUID;
   this.log.debug("PuntPlatform.configureAccessory %s", name);
   
-  this.hap_accessories.push(accessory);
-    
   if (this.accessories[uuid]) {
     this.log.error("PuntPlatform.configureAccessory %s UUID %s already used.", name, uuid);
     process.exit(1);
@@ -181,6 +179,9 @@ PuntPlatform.prototype.configureAccessory = function(accessory) {
     i_accessory.configureAccessory(accessory);
     
     this.accessories[uuid] = i_accessory;
+    this.hap_accessories.push(accessory);
+  } else {
+    this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
   }
 }
 
@@ -207,16 +208,21 @@ PuntPlatform.prototype.reload = function() {
   this.log("PuntPlatform.reload ...");
   this.api.unregisterPlatformAccessories(plugin_name, platform_name, this.hap_accessories);
   this.hap_accessories = [];
-  this.accessories = {};
+      
+  for (var k in this.accessories) {
+    delete this.accessories[k];
+  }
   
   this.readConfig();
   this.addAccessories();
   
   PuntInit.setValues(this.log, p_config, this.accessories, reload_name, function() {
     this.log.debug("PuntPlatform.reload init done");
+    
     if (this.puntview.run) {
       this.PuntView.refresh("all");
     }
+    
     if (this.simulator.run) {
       this.Simulator.refresh("all");
     }
