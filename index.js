@@ -13,6 +13,7 @@ var Monitor = require('./lib/monitor.js').Monitor;
 
 var Accessory, Service, Characteristic, UUIDGen;
 var storagePath, p_config;
+var cachedAccessories = 0;
 
 var platform_name = "punt";
 var plugin_name = "homebridge-" + platform_name;
@@ -91,8 +92,11 @@ function PuntPlatform(log, config, api) {
 
     this.api.on('didFinishLaunching', function() {
       this.log("Plugin - DidFinishLaunching");
-      this.log.debug("Number of chaced Accessories: %s", this.hap_accessories.length);
+     
       this.addAccessories();
+        
+      this.log.debug("Number of chaced Accessories: %s", cachedAccessories);
+      this.log("Number of Accessories: %s", Object.keys(this.accessories).length);
 
       PuntInit.setValues(this.log, p_config, this.accessories, reload_name, function() {
         this.log.debug("PuntPlatform init done");
@@ -137,7 +141,6 @@ PuntPlatform.prototype.addAccessories = function() {
       this.addAccessory(name);
     }
   }
-  this.log("Number of Accessories: %s", Object.keys(this.accessories).length);
 }
 
 PuntPlatform.prototype.addAccessory = function(name) {
@@ -148,6 +151,7 @@ PuntPlatform.prototype.addAccessory = function(name) {
     var uuid = UUIDGen.generate(name);
     
     var newAccessory = new Accessory(name, uuid);
+    newsAccessory.reachable = true;
     //this.log.debug("PuntPlatform.addAccessory UUID = %s", newAccessory.UUID);
     
     var i_accessory = new PuntAccessory(this.buildParams(name, uuid));
@@ -163,9 +167,9 @@ PuntPlatform.prototype.addAccessory = function(name) {
 
 PuntPlatform.prototype.configureAccessory = function(accessory) {
 
+  cachedAccessories++;
   var name = accessory.displayName;
   var uuid = accessory.UUID;
-  this.log.debug("PuntPlatform.configureAccessory %s", name);
   
   if (this.accessories[uuid]) {
     this.log.error("PuntPlatform.configureAccessory %s UUID %s already used.", name, uuid);
@@ -173,6 +177,7 @@ PuntPlatform.prototype.configureAccessory = function(accessory) {
   }
   
   if (this.accessories_config[name]) {
+    this.log.debug("PuntPlatform.configureAccessory %s", name);
     accessory.reachable = true;
 
     var i_accessory = new PuntAccessory(this.buildParams(name, uuid));
@@ -181,6 +186,7 @@ PuntPlatform.prototype.configureAccessory = function(accessory) {
     this.accessories[uuid] = i_accessory;
     this.hap_accessories.push(accessory);
   } else {
+    this.log.debug("PuntPlatform.configureAccessory unregister %s", name);
     this.api.unregisterPlatformAccessories(plugin_name, platform_name, [accessory]);
   }
 }
